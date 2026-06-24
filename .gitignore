@@ -13,6 +13,7 @@ dist/
 .env.*
 
 # Prototype files at root (keep untouched, not committed)
+app.css
 app.jsx
 components.jsx
 screens-main.jsx

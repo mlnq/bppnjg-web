@@ -1,0 +1,96 @@
+/* =========================================================================
+   Pielgrzym — aplikacja pielgrzymkowa  ·  app.css
+   Tokeny + baza + style komponentów. Klimat: ciepły papier, burgund, droga.
+   ========================================================================= */
+
+/* ----------------------------------------------------------------- TOKENY */
+:root {
+  /* Tło / papier */
+  --paper:        #EFEFF4;   /* główne, chłodny neutralny (iOS) */
+  --paper-warm:   #F3F3F7;   /* delikatnie jaśniejszy (Start) */
+  --paper-sunk:   #E5E5EA;   /* wgłębienia, tory, panele */
+  --surface:      #FCFCFC;   /* karty */
+  --surface-soft: #F6F6F9;   /* wewnętrzne panele w kartach */
+
+  /* Atrament */
+  --ink:    #1C1C1E;   /* nagłówki, tekst główny */
+  --ink-2:  #48484A;   /* tekst pomocniczy */
+  --muted:  #8A8A8F;   /* etykiety, metadane */
+  --faint:  #C2C2C8;   /* placeholdery, ikony nieaktywne */
+  --line:   #E2E2E8;   /* hairline */
+  --line-2: #ECECF1;   /* jeszcze lżejsza linia */
+
+  /* Burgund — sygnatura */
+  --wine:      #7C1D3F;
+  --wine-700:  #631531;   /* konferencja, naciski */
+  --wine-300:  #AE5D75;
+  --rose:      #F2D8E0;   /* pigułki dzień / akcent */
+  --rose-soft: #F8E7ED;   /* tło ikon okrągłych */
+
+  /* Akcenty modułów */
+  --amber:    #BF7320;   /* trasa, czytania-tile alt */
+  --amber-bg: #F3E6D2;
+  --green:    #2E8B5E;   /* modlitewnik */
+  --green-bg: #D9ECE1;
+  --blue:     #2C6CB0;   /* brewiarz / czytania */
+  --blue-bg:  #DBE6F3;
+
+  /* Stany */
+  --good:    #2E8B5E;
+  --warn:    #BF7320;
+  --danger:  #B23A48;
+
+  /* Cienie — niskie, miękkie, chłodne */
+  --sh-sm:   0 1px 2px rgba(28,28,40,.05);
+  --sh-card: 0 8px 24px -16px rgba(28,28,46,.20), 0 1px 2px rgba(28,28,46,.04);
+  --sh-soft: 0 4px 14px -8px rgba(28,28,46,.14);
+  --sh-pop:  0 22px 50px -20px rgba(28,28,46,.28), 0 2px 6px rgba(28,28,46,.06);
+
+  /* Promienie */
+  --r-card: 22px;
+  --r-tile: 20px;
+  --r-inner: 14px;
+  --r-chip: 12px;
+  --r-pill: 999px;
+
+  /* Skok rytmu */
+  --s1:4px;  --s2:8px;  --s3:12px; --s4:16px; --s5:20px;
+  --s6:24px; --s7:28px; --s8:32px; --s10:40px; --s12:48px; --s16:64px;
+
+  /* Typografia (nadpisywana przez kierunki Tweaks) */
+  --font-head: 'Hanken Grotesk', system-ui, sans-serif;
+  --font-body: 'Hanken Grotesk', system-ui, sans-serif;
+  --font-read: 'Hanken Grotesk', system-ui, sans-serif;
+  --read-scale: 1; /* @kind other */
+
+  /* Wymiary powłoki */
+  --col:      720px;   /* główna kolumna treści */
+  --rail:     312px;   /* prawa szyna kontekstu */
+  --nav-h:    72px;    /* dolny pasek */
+  --header-h: 60px;
+}
+
+/* Kierunki typografii (Tweaks) ------------------------------------------- */
+[data-type="spokoj"] {
+  --font-head: 'Hanken Grotesk', system-ui, sans-serif;
+  --font-body: 'Hanken Grotesk', system-ui, sans-serif;
+}
+[data-type="pielgrzym"] {
+  --font-head: 'Bricolage Grotesque', system-ui, sans-serif;
+  --font-body: 'Hanken Grotesk', system-ui, sans-serif;
+}
+[data-type="ostry"] {
+  --font-head: 'Space Grotesk', system-ui, sans-serif;
+  --font-body: 'Schibsted Grotesk', system-ui, sans-serif;
+}
+[data-read="serif"] { --font-read: 'Source Serif 4', Georgia, serif; }
+[data-read="sans"]  { --font-read: var(--font-body); }
+
+/* Akcent: subtelny vs wyrazisty (nasycenie kafli modułów) */
+[data-accent="wyrazisty"] {
+  --amber-bg: #EFD9B8;
+  --green-bg: #CBE7D6;
+  --blue-bg:  #CEDFF0;
+  --rose-soft:#F4DAE3;
+}
+

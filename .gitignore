@@ -1,0 +1,35 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+
+# Editor/OS artifacts
+.DS_Store
+*.local
+
+# Environment
+.env
+.env.*
+
+# Prototype files at root (keep untouched, not committed)
+app.jsx
+components.jsx
+screens-main.jsx
+screens-content.jsx
+tweaks-panel.jsx
+icons.js
+image-slot.js
+data.js
+_ds_bundle.js
+_ds_manifest.json
+_adherence.oxlintrc.json
+HANDOFF.md
+handoff/
+uploads/
+# Prototype HTML files at root (not the Vite entry index.html)
+Pielgrzym*.html
+!index.html
+
+# Superpowers workspace
+.superpowers/

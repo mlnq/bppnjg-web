@@ -1,0 +1,71 @@
+{
+  "pilgrimage": {
+    "id": "xliii-2025",
+    "name": "XLIII Piesza Pielgrzymka",
+    "startDate": "2025-07-30",
+    "totalDays": 14,
+    "totalDistanceKm": 400,
+    "overall": {
+      "traveledDistanceKm": 72.5,
+      "remainingDistanceKm": 327.5,
+      "totalDistanceKm": 400,
+      "progressPercent": 18,
+      "completedDayCount": 2,
+      "activeDayNumber": 3
+    },
+    "days": [
+      {
+        "id": "day-1",
+        "dayNumber": 1,
+        "title": "Dzień 1",
+        "date": "2025-07-30",
+        "route": { "startStopId": "d1_s0", "endStopId": "d1_s1", "totalDistanceKm": 31.4, "scheduledStartTime": "06:00", "plannedArrivalTime": "17:00" },
+        "stops": [
+          { "id": "d1_s0", "orderIndex": 0, "name": "Kościół Katedralny", "townName": "Białystok", "time": "06:00", "type": "start", "distanceToNextKm": 31.4, "latitude": null, "longitude": null },
+          { "id": "d1_s1", "orderIndex": 1, "name": null, "townName": "Suraż", "time": "17:00", "type": "night", "distanceToNextKm": 0, "latitude": null, "longitude": null }
+        ],
+        "news": []
+      },
+      {
+        "id": "day-2",
+        "dayNumber": 2,
+        "title": "Dzień 2",
+        "date": "2025-07-31",
+        "route": { "startStopId": "d2_s0", "endStopId": "d2_s1", "totalDistanceKm": 28.1, "scheduledStartTime": "05:30", "plannedArrivalTime": "16:30" },
+        "stops": [
+          { "id": "d2_s0", "orderIndex": 0, "name": null, "townName": "Suraż", "time": "05:30", "type": "start", "distanceToNextKm": 28.1, "latitude": null, "longitude": null },
+          { "id": "d2_s1", "orderIndex": 1, "name": null, "townName": "Brańsk", "time": "16:30", "type": "night", "distanceToNextKm": 0, "latitude": null, "longitude": null }
+        ],
+        "news": []
+      },
+      {
+        "id": "day-3",
+        "dayNumber": 3,
+        "title": "Dzień 3",
+        "date": "2025-08-01",
+        "route": { "startStopId": "d3_s0", "endStopId": "d3_s6", "totalDistanceKm": 31.5, "scheduledStartTime": "05:30", "plannedArrivalTime": "17:30" },
+        "stops": [
+          { "id": "d3_s0", "orderIndex": 0, "name": "Kościół Wniebowzięcia NMP", "townName": "Brańsk", "time": "05:30", "type": "start", "distanceToNextKm": 4.2, "latitude": null, "longitude": null },
+          { "id": "d3_s1", "orderIndex": 1, "name": "Kapliczka przydrożna", "townName": "Kąty", "time": "06:40", "type": "info", "distanceToNextKm": 5.1, "durationMin": 0, "latitude": null, "longitude": null, "badge": "Modlitwa", "description": "Modlitwa poranna" },
+          { "id": "d3_s2", "orderIndex": 2, "name": null, "townName": "Domanowo", "time": "08:10", "type": "info", "distanceToNextKm": 2.7, "durationMin": 45, "latitude": null, "longitude": null, "badge": "Postój", "description": "Śniadanie" },
+          { "id": "d3_s3", "orderIndex": 3, "name": null, "townName": "Olędzkie", "time": "09:30", "type": "info", "distanceToNextKm": 6.3, "latitude": null, "longitude": null },
+          { "id": "d3_s4", "orderIndex": 4, "name": "Szkoła Podstawowa", "townName": "Pobikry", "time": "12:15", "type": "info", "distanceToNextKm": 4.9, "durationMin": 60, "latitude": null, "longitude": null, "badge": "Postój", "description": "Obiad przy szkole" },
+          { "id": "d3_s5", "orderIndex": 5, "name": null, "townName": "Winna-Poświętna", "time": "15:00", "type": "info", "distanceToNextKm": 3.3, "latitude": null, "longitude": null, "badge": "Konferencja", "description": "Konferencja w drodze" },
+          { "id": "d3_s6", "orderIndex": 6, "name": "Zespół Szkół, hala sportowa", "townName": "Ciechanowiec", "time": "17:30", "type": "night", "distanceToNextKm": 0, "latitude": null, "longitude": null }
+        ],
+        "conference": {
+          "id": 3,
+          "date": "2025-08-01",
+          "author": "ks. Tomasz Wadowski",
+          "title": "Iść w rytmie, który nie jest twój",
+          "content": "Pierwszego dnia każdy idzie tak, jak chce. Drugiego — tak, jak musi. Trzeci dzień jest najtrudniejszy, bo to dzień, w którym uczysz się iść tak, jak idzie grupa."
+        },
+        "weather": { "temperatureC": 17, "icon": "partlyCloudy" },
+        "news": [
+          { "id": "n1", "title": "Zmiana miejsca postoju obiadowego", "summary": "Ze względu na prace obiad będzie w Pobikrach przy szkole.", "category": "logistics", "publishedAt": "2025-08-01T08:10:00Z", "isPinned": true },
+          { "id": "n2", "title": "Odcinek drogi wojewódzkiej — idziemy lewą stroną", "summary": "Między Kątami a Domanowem 2 km poboczem.", "category": "announcement", "publishedAt": "2025-08-01T06:30:00Z", "isPinned": true }
+        ]
+      }
+    ]
+  }
+}

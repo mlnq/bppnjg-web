@@ -1,0 +1,7 @@
+{
+  "items": [
+    { "id": "q3", "dayNumber": 3, "title": "Ciechanowiec — hala gotowa, ciepła woda jest", "content": "Hala sportowa otwarta od 16:30. Karimaty rozkładamy wzdłuż dłuższych ścian.\n\nCiepła woda w obu szatniach działa do 22:00. Prosimy o krótkie prysznice, jest nas dziś 480 osób.\n\nKuchnia polowa staje przy wejściu od boiska. Kolacja od 18:00: grochówka i chleb. Śniadanie 4:45.\n\nApteczka i punkt opatrunkowy — sala nr 12, przy wejściu skręt w prawo.", "publishedAt": "2025-08-01T16:00:00Z" },
+    { "id": "q2", "dayNumber": 2, "title": "Brańsk — dziękujemy gospodarzom", "content": "Cisza nocna od 22:00. Rano zbiórka grup przy figurze.\n\nParafia przyjęła nas wyjątkowo serdecznie. Zgubione rzeczy czekają u kwatermistrza.", "publishedAt": "2025-07-31T19:00:00Z" },
+    { "id": "q1", "dayNumber": 1, "title": "Pierwszy dzień za nami", "content": "31 kilometrów to dużo jak na pierwszy dzień. Jutro idziemy wolniej, pamiętajcie o stopach.\n\nBagażówka rusza zawsze 30 minut po kolumnie.", "publishedAt": "2025-07-30T18:00:00Z" }
+  ]
+}

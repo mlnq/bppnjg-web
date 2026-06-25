@@ -1,0 +1,8 @@
+{
+  "items": [
+    { "id": "n1", "title": "Zmiana miejsca postoju obiadowego", "summary": "Ze względu na prace obiad będzie w Pobikrach przy szkole.", "category": "logistics", "publishedAt": "2025-08-01T08:10:00Z", "isPinned": true },
+    { "id": "n2", "title": "Odcinek drogi wojewódzkiej — idziemy lewą stroną", "summary": "Między Kątami a Domanowem 2 km poboczem.", "category": "announcement", "publishedAt": "2025-08-01T06:30:00Z", "isPinned": true },
+    { "id": "n3", "title": "Intencja dnia trzeciego", "summary": "Dzień ofiarujemy w intencji rodzin pątników.", "category": "spiritual", "publishedAt": "2025-07-31T19:40:00Z" },
+    { "id": "n4", "title": "Punkt medyczny — godziny dyżuru", "summary": "Opatrunki i pęcherze — sala 12 w Ciechanowcu, od 16:30 do północy.", "category": "announcement", "publishedAt": "2025-07-31T17:05:00Z" }
+  ]
+}

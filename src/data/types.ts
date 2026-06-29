@@ -111,7 +111,7 @@ export type RouteStateRequest = {
 };
 
 export type Akapit =
-  | { typ: 'lead' | 'p' | 'h3' | 'verse' | 'resp' | 'drop'; t: string };
+  | { typ: 'lead' | 'p' | 'h3' | 'verse' | 'resp' | 'drop' | 'source'; t: string };
 
 export type ContentModule = {
   modul: string;

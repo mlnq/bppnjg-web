@@ -6,6 +6,7 @@ export function Prose({ akapity, dropcap }: ProseProps) {
   return (
     <div className="prose">
       {akapity.map((a, i) => {
+        if (a.typ === 'source') return <p key={i} className="source">{a.t}</p>;
         if (a.typ === 'h3') return <h3 key={i}>{a.t}</h3>;
         if (a.typ === 'verse') return <span key={i} className="verse">{a.t}</span>;
         if (a.typ === 'resp') return <p key={i} className="resp">{a.t}</p>;

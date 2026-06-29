@@ -31,7 +31,7 @@ function niedzielaToAkapity(data: NiedzielaDailyReadings): Akapit[] {
   if (data.season) out.push({ typ: 'lead', t: data.season });
   for (const r of data.readings) {
     out.push({ typ: 'h3', t: `${r.label} (${r.reference})` });
-    if (r.title) out.push({ typ: 'verse', t: r.title });
+    if (r.title) out.push({ typ: 'source', t: r.title });
     if (r.introduction) out.push({ typ: 'p', t: r.introduction });
     for (const para of r.body.split('\n\n').filter(Boolean)) {
       out.push({ typ: 'p', t: para.trim() });

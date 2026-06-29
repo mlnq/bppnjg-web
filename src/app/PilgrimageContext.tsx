@@ -9,19 +9,21 @@ export type Ustawienia = {
   accent: 'subtelny' | 'wyrazisty';
   readScale: number;
   tryb: 'auto' | 'gps' | 'plan';
+  devDay: number | null;
 };
 
 export const DOMYSLNE: Ustawienia = {
   type: 'spokoj', read: 'sans', accent: 'subtelny', readScale: 1, tryb: 'auto',
+  devDay: null,
 };
 
-type PilgrimageState =
+type LoadState =
   | { status: 'loading' }
   | { status: 'error'; message: string }
-  | { status: 'ok'; pilgrimage: ApiPilgrimage; day: ApiPilgrimageDay };
+  | { status: 'ok'; pilgrimage: ApiPilgrimage };
 
 type CtxValue = {
-  state: PilgrimageState;
+  state: LoadState | { status: 'ok'; pilgrimage: ApiPilgrimage; day: ApiPilgrimageDay };
   settings: Ustawienia;
   setSettings: (s: Ustawienia) => void;
 };
@@ -29,20 +31,29 @@ type CtxValue = {
 const Ctx = createContext<CtxValue | null>(null);
 
 export function PilgrimageProvider({ children }: { children: React.ReactNode }) {
-  const [state, setState] = useState<PilgrimageState>({ status: 'loading' });
+  const [loadState, setLoadState] = useState<LoadState>({ status: 'loading' });
   const [settings, setSettings] = useLocalStorage<Ustawienia>('pg.ustawienia', DOMYSLNE);
 
   useEffect(() => {
     api.bootstrap()
       .then((res) => {
-        if (!res.pilgrimage) { setState({ status: 'error', message: 'Brak danych pielgrzymki.' }); return; }
-        const p = res.pilgrimage;
-        const day = selectCurrentDay(p);
-        if (!day) { setState({ status: 'error', message: 'Brak aktywnego dnia.' }); return; }
-        setState({ status: 'ok', pilgrimage: p, day });
+        if (!res.pilgrimage) { setLoadState({ status: 'error', message: 'Brak danych pielgrzymki.' }); return; }
+        setLoadState({ status: 'ok', pilgrimage: res.pilgrimage });
       })
-      .catch((e: unknown) => setState({ status: 'error', message: String(e) }));
+      .catch((e: unknown) => setLoadState({ status: 'error', message: String(e) }));
   }, []);
+
+  let state: CtxValue['state'];
+  if (loadState.status !== 'ok') {
+    state = loadState;
+  } else {
+    const day = selectCurrentDay(loadState.pilgrimage, settings.devDay);
+    if (!day) {
+      state = { status: 'error', message: 'Brak aktywnego dnia.' };
+    } else {
+      state = { status: 'ok', pilgrimage: loadState.pilgrimage, day };
+    }
+  }
 
   return <Ctx.Provider value={{ state, settings, setSettings }}>{children}</Ctx.Provider>;
 }
@@ -53,7 +64,12 @@ export function usePilgrimage() {
   return ctx;
 }
 
-function selectCurrentDay(p: ApiPilgrimage): ApiPilgrimageDay | null {
+export function selectCurrentDay(p: ApiPilgrimage, devDay?: number | null): ApiPilgrimageDay | null {
+  if (devDay !== null && devDay !== undefined) {
+    const clamped = Math.max(1, Math.min(p.totalDays, devDay));
+    return p.days.find((d) => d.dayNumber === clamped) ?? p.days[0] ?? null;
+  }
+
   const YEAR = new Date().getFullYear();
   const start = new Date(YEAR, 6, 30, 12);
   const end = new Date(YEAR, 7, 12, 12);
@@ -61,7 +77,7 @@ function selectCurrentDay(p: ApiPilgrimage): ApiPilgrimageDay | null {
 
   let nr: number;
   if (now < start) nr = 1;
-  else if (now > end) nr = 14;
+  else if (now > end) nr = p.totalDays;
   else nr = Math.floor((now.getTime() - start.getTime()) / 86_400_000) + 1;
 
   return p.days.find((d) => d.dayNumber === nr) ?? p.days[0] ?? null;

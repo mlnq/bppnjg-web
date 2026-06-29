@@ -87,8 +87,53 @@ export function UstawieniaScreen() {
             </div>
           </div>
 
-          <Eyebrow className="enter enter-4" style={{ margin: 'var(--s6) 0 var(--s3)' }}>Dane offline</Eyebrow>
+          <Eyebrow className="enter enter-4" style={{ margin: 'var(--s6) 0 var(--s3)', color: '#b00020' }}>DEV · Symulator dnia</Eyebrow>
           <div className="setgroup enter enter-4">
+            <div className="setrow" style={{ flexDirection: 'column', alignItems: 'stretch', gap: 'var(--s3)' }}>
+              <div className="setrow__body" style={{ padding: 0 }}>
+                <div className="setrow__t">
+                  {settings.devDay === null
+                    ? 'Prawdziwa data'
+                    : settings.devDay < 1
+                      ? 'Przed pielgrzymką'
+                      : settings.devDay > 14
+                        ? 'Po pielgrzymce'
+                        : `Dzień ${settings.devDay} z 14`}
+                </div>
+                <div className="setrow__d">
+                  {settings.devDay === null
+                    ? 'Używana jest prawdziwa data urządzenia.'
+                    : 'Nadpisana ręcznie. Reset → prawdziwa data.'}
+                </div>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--s3)' }}>
+                <button
+                  className="iconbtn"
+                  onClick={() => set('devDay', Math.max(0, (settings.devDay ?? 1) - 1))}
+                  aria-label="Poprzedni dzień"
+                  style={{ width: 40, height: 40, borderRadius: '50%', background: 'var(--paper-sunk)' }}>
+                  −
+                </button>
+                <button
+                  className="iconbtn"
+                  onClick={() => set('devDay', Math.min(15, (settings.devDay ?? 1) + 1))}
+                  aria-label="Następny dzień"
+                  style={{ width: 40, height: 40, borderRadius: '50%', background: 'var(--paper-sunk)' }}>
+                  +
+                </button>
+                {settings.devDay !== null && (
+                  <button
+                    onClick={() => set('devDay', null)}
+                    style={{ padding: '6px 16px', borderRadius: 999, background: '#fde8e8', color: '#b00020', fontSize: 12, fontWeight: 700, letterSpacing: '.06em', textTransform: 'uppercase' }}>
+                    Reset
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
+
+          <Eyebrow className="enter enter-5" style={{ margin: 'var(--s6) 0 var(--s3)' }}>Dane offline</Eyebrow>
+          <div className="setgroup enter enter-5">
             <div className="setrow">
               <span className="setrow__body">
                 <span className="setrow__t">Treści offline</span>

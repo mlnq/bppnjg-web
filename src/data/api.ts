@@ -9,12 +9,13 @@ import bootstrapSeed from './seeds/bootstrap.json';
 import newsSeed from './seeds/news.json';
 import quartermasterSeed from './seeds/quartermaster.json';
 
-const BASE = import.meta.env.VITE_API_BASE_URL as string | undefined;
+const BASE = (import.meta.env.VITE_API_BASE_URL as string | undefined) ?? '';
+const USE_SEEDS = import.meta.env.VITE_USE_SEEDS === 'true';
 const YEAR = '2025';
 
 function fetchJson<T>(path: string, init?: RequestInit): Promise<T> {
-  if (!BASE) return Promise.reject(new Error('No VITE_API_BASE_URL'));
-  return fetch(`${BASE}${path}`, init).then((r) => {
+  const url = BASE ? `${BASE}${path}` : path;
+  return fetch(url, init).then((r) => {
     if (!r.ok) throw new Error(`API ${r.status}: ${path}`);
     return r.json() as Promise<T>;
   });
@@ -22,17 +23,17 @@ function fetchJson<T>(path: string, init?: RequestInit): Promise<T> {
 
 export const api = {
   bootstrap(): Promise<BootstrapResponse> {
-    if (!BASE) return Promise.resolve(bootstrapSeed as BootstrapResponse);
+    if (USE_SEEDS) return Promise.resolve(bootstrapSeed as BootstrapResponse);
     return fetchJson<BootstrapResponse>(`/api/pilgrimages/${YEAR}/bootstrap`);
   },
 
   getNews(): Promise<NewsResponse> {
-    if (!BASE) return Promise.resolve(newsSeed as NewsResponse);
+    if (USE_SEEDS) return Promise.resolve(newsSeed as NewsResponse);
     return fetchJson<NewsResponse>('/api/news?limit=50&page=1');
   },
 
   getQuartermaster(): Promise<QuartermasterResponse> {
-    if (!BASE) return Promise.resolve(quartermasterSeed as QuartermasterResponse);
+    if (USE_SEEDS) return Promise.resolve(quartermasterSeed as QuartermasterResponse);
     return fetchJson<QuartermasterResponse>('/api/quartermaster-comments');
   },
 

@@ -46,8 +46,8 @@ export type ApiPilgrimage = {
   name: string;
   startDate: string;
   totalDays: number;
-  totalDistanceKm: number;
-  overall: {
+  totalDistanceKm?: number;
+  overall?: {
     traveledDistanceKm: number;
     remainingDistanceKm: number;
     totalDistanceKm: number;

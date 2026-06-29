@@ -10,6 +10,16 @@ export default defineConfig({
         changeOrigin: true,
         secure: true,
       },
+      '/brewiarz-proxy': {
+        target: 'https://brewiarz.pl',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/brewiarz-proxy/, ''),
+      },
+      '/niedziela-proxy': {
+        target: 'https://niezbednik.niedziela.pl',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/niedziela-proxy/, ''),
+      },
     },
   },
   plugins: [

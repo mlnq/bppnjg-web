@@ -28,8 +28,16 @@ export default defineConfig({
       registerType: 'autoUpdate',
       manifest: false,
       workbox: {
-        globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
+        globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2,json}'],
         runtimeCaching: [
+          {
+            urlPattern: /\/spiewnik_pielgrzymkowy\.json$/,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'local-songbook',
+              expiration: { maxEntries: 1, maxAgeSeconds: 31536000 },
+            },
+          },
           {
             urlPattern: /\/api\/pilgrimages\/\d+\/bootstrap/,
             handler: 'StaleWhileRevalidate',

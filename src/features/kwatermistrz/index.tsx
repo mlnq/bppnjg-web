@@ -1,12 +1,10 @@
-import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { api } from '../../data/api';
-import { Header, Pill } from '../../components';
+import { Pill } from '../../components';
 
 export function KwatermistrzScreen() {
   const navigate = useNavigate();
-  const [scrolled, setScrolled] = useState(false);
   const { data } = useQuery({
     queryKey: ['quartermaster'],
     queryFn: () => api.getQuartermaster(),
@@ -15,10 +13,8 @@ export function KwatermistrzScreen() {
   const items = data?.items ?? [];
 
   return (
-    <>
-      <Header title="Kwatermistrz" scrolled={scrolled} />
-      <div className="viewport scroll" onScroll={(e) => setScrolled((e.target as HTMLElement).scrollTop > 4)}>
-        <div className="stage">
+    <div className="viewport scroll">
+      <div className="stage">
           <p className="muted enter enter-1" style={{ fontSize: 15, lineHeight: 1.55, margin: '0 0 var(--s5)' }}>
             Wieczorne podsumowania dnia — nocleg, kuchnia, sprawy organizacyjne.
           </p>
@@ -40,8 +36,7 @@ export function KwatermistrzScreen() {
               );
             })}
           </div>
-        </div>
       </div>
-    </>
+    </div>
   );
 }

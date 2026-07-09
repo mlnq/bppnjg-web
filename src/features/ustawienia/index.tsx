@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { usePilgrimage, type Ustawienia } from '../../app/PilgrimageContext';
-import { Header, Eyebrow } from '../../components';
+import { Eyebrow, ScreenTools } from '../../components';
 
 function Seg<T extends string>({
   value, options, onChange,
@@ -29,10 +29,9 @@ export function UstawieniaScreen() {
     setSettings({ ...settings, [k]: v });
 
   return (
-    <>
-      <Header title="Ustawienia" onBack={() => navigate(-1)} />
-      <div className="viewport scroll">
-        <div className="stage" style={{ maxWidth: 620 }}>
+    <div className="viewport scroll">
+      <div className="stage" style={{ maxWidth: 620 }}>
+          <ScreenTools onBack={() => navigate(-1)} backLabel="Wróć" />
 
           <Eyebrow className="enter enter-1" style={{ marginBottom: 'var(--s3)' }}>Źródło lokalizacji</Eyebrow>
           <div className="setgroup enter enter-1">
@@ -143,8 +142,7 @@ export function UstawieniaScreen() {
             </div>
           </div>
 
-        </div>
       </div>
-    </>
+    </div>
   );
 }

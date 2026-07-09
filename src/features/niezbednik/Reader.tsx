@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { Reader, Header, Loader } from '../../components';
+import { Reader, Loader, ScreenTools } from '../../components';
 import { Icon } from '../../lib/icons';
 import { CONTENT_MAP } from '../../data/content';
 import { useBreviary } from '../../lib/useBreviary';
@@ -55,7 +55,7 @@ function BrewiarzReader({ onBack }: { onBack: () => void }) {
   if (error || !data) return (
     <Reader title="Brewiarz" onBack={onBack} kickerIcon="church" kickerTone="blue"
       kickerLabel="Liturgia godzin" headline="Jutrznia"
-      akapity={[{ typ: 'p', t: 'Nie można pobrać brewiarza. Sprawdź połączenie.' }]} />
+      akapity={[{ typ: 'p', t: 'Dzisiejsza treść nie została jeszcze zapisana offline.' }]} />
   );
 
   return (
@@ -83,7 +83,7 @@ function CzytaniaReader({ onBack }: { onBack: () => void }) {
   if (error || !data) return (
     <Reader title="Czytania" onBack={onBack} kickerIcon="book-open" kickerTone="amber"
       kickerLabel="Liturgia słowa" headline="Czytania dnia"
-      akapity={[{ typ: 'p', t: 'Nie można pobrać czytań. Sprawdź połączenie.' }]} />
+      akapity={[{ typ: 'p', t: 'Dzisiejsza treść nie została jeszcze zapisana offline.' }]} />
   );
 
   return (
@@ -100,14 +100,13 @@ function CzytaniaReader({ onBack }: { onBack: () => void }) {
 }
 
 type Song = { title: string; lines: { text: string; chords: string[] }[] };
+const SONGBOOK_URL = `${import.meta.env.BASE_URL}spiewnik_pielgrzymkowy.json`;
 
 function SongDetail({ song, onBack }: { song: Song; onBack: () => void }) {
-  const [scrolled, setScrolled] = useState(false);
   return (
-    <>
-      <Header title="Śpiewnik" onBack={onBack} scrolled={scrolled} />
-      <div className="viewport scroll" onScroll={(e) => setScrolled((e.target as HTMLElement).scrollTop > 4)}>
-        <div className="stage">
+    <div className="viewport scroll">
+      <div className="stage">
+          <ScreenTools onBack={onBack} backLabel="Śpiewnik" />
           <span className="eyebrow eyebrow--wine">Pieśń</span>
           <h1 style={{
             fontFamily: 'var(--font-head)', fontWeight: 800,
@@ -139,24 +138,25 @@ function SongDetail({ song, onBack }: { song: Song; onBack: () => void }) {
               </div>
             ))}
           </div>
-        </div>
       </div>
-    </>
+    </div>
   );
 }
 
 function SpiewnikReader({ onBack }: { onBack: () => void }) {
   const [query, setQuery] = useState('');
   const [selected, setSelected] = useState<Song | null>(null);
-  const [scrolled, setScrolled] = useState(false);
-
-  const { data: songs = [], isLoading } = useQuery({
+  const { data: songs = [], isLoading, error } = useQuery({
     queryKey: ['spiewnik'],
-    queryFn: () =>
-      fetch('/spiewnik_pielgrzymkowy.json')
-        .then(r => r.json())
-        .then((d: { songs: Song[] }) => d.songs),
+    queryFn: async () => {
+      const r = await fetch(SONGBOOK_URL, { cache: 'force-cache' });
+      if (!r.ok) throw new Error(`Songbook ${r.status}`);
+      const d = await r.json() as { songs: Song[] };
+      return d.songs;
+    },
     staleTime: Infinity,
+    gcTime: Infinity,
+    retry: false,
   });
 
   if (selected) return <SongDetail song={selected} onBack={() => setSelected(null)} />;
@@ -167,10 +167,9 @@ function SpiewnikReader({ onBack }: { onBack: () => void }) {
     .filter(({ s }) => !q || s.title.toLowerCase().includes(q));
 
   return (
-    <>
-      <Header title="Śpiewnik" onBack={onBack} scrolled={scrolled} />
-      <div className="viewport scroll" onScroll={(e) => setScrolled((e.target as HTMLElement).scrollTop > 4)}>
-        <div className="stage">
+    <div className="viewport scroll">
+      <div className="stage">
+          <ScreenTools onBack={onBack} backLabel="Niezbędnik" />
           <div style={{ position: 'relative', marginBottom: 'var(--s4)' }}>
             <span style={{
               position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)',
@@ -197,6 +196,12 @@ function SpiewnikReader({ onBack }: { onBack: () => void }) {
 
           {isLoading ? (
             <Loader />
+          ) : error ? (
+            <div className="card" style={{ padding: 'var(--s8)', textAlign: 'center' }}>
+              <p className="muted" style={{ margin: 0 }}>
+                Śpiewnik nie jest jeszcze dostępny offline. Otwórz go raz przy połączeniu z internetem, aby zapisać go w pamięci aplikacji.
+              </p>
+            </div>
           ) : filtered.length === 0 ? (
             <div className="card" style={{ padding: 'var(--s8)', textAlign: 'center' }}>
               <p className="muted">Brak wyników dla „{query}"</p>
@@ -228,9 +233,8 @@ function SpiewnikReader({ onBack }: { onBack: () => void }) {
               ))}
             </div>
           )}
-        </div>
       </div>
-    </>
+    </div>
   );
 }
 

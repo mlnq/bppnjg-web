@@ -1,8 +1,7 @@
-import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { api } from '../../data/api';
-import { Header, Eyebrow, SectionHead } from '../../components';
+import { Eyebrow, SectionHead } from '../../components';
 import { Icon } from '../../lib/icons';
 import { NoticeCard } from './NoticeCard';
 import type { NewsItem } from '../../data/types';
@@ -14,7 +13,6 @@ function mapCategory(raw: string): NewsItem['category'] {
 
 export function InfoScreen() {
   const navigate = useNavigate();
-  const [scrolled, setScrolled] = useState(false);
 
   const { data } = useQuery({
     queryKey: ['news'],
@@ -34,11 +32,8 @@ export function InfoScreen() {
   const rest = items.filter((n) => !n.isPinned);
 
   return (
-    <>
-      <Header title="Info" scrolled={scrolled}
-        right={<button className="hdr__btn right" aria-label="Powiadomienia"><Icon name="bell" /></button>} />
-      <div className="viewport scroll" onScroll={(e) => setScrolled((e.target as HTMLElement).scrollTop > 4)}>
-        <div className="stage">
+    <div className="viewport scroll">
+      <div className="stage">
           <Eyebrow className="enter enter-1" style={{ marginBottom: 'var(--s2)' }}>Komunikaty z trasy</Eyebrow>
           <div className="stack--lg stack enter enter-1">
             {pinned.map((n) => <NoticeCard key={n.id} item={n} onClick={() => navigate('/info/' + n.id)} />)}
@@ -50,8 +45,7 @@ export function InfoScreen() {
           <div className="center mt6">
             <span className="localnote"><Icon name="check" />Wszystkie komunikaty dostępne offline</span>
           </div>
-        </div>
       </div>
-    </>
+    </div>
   );
 }

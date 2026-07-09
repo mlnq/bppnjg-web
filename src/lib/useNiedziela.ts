@@ -1,4 +1,10 @@
+import { useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
+import {
+  clearPersistentCacheByPrefix,
+  makeDailyCacheKey,
+  usePersistentCache,
+} from './usePersistentCache';
 
 export type NiedzielaReading = {
   id: string;
@@ -23,6 +29,8 @@ function formatDatePath(date: Date) {
   const d = String(date.getDate()).padStart(2, '0');
   return `${y}-${m}-${d}`;
 }
+
+const CACHE_PREFIX = 'pg.czytania.';
 
 function decodeHtml(v: string) {
   return v
@@ -89,10 +97,32 @@ async function fetchDailyReadings(): Promise<NiedzielaDailyReadings> {
 }
 
 export function useNiedziela() {
-  return useQuery({
-    queryKey: ['niedziela-readings'],
-    queryFn: fetchDailyReadings,
-    staleTime: 6 * 60 * 60 * 1000,
-    retry: 1,
+  const date = formatDatePath(new Date());
+  const cacheKey = makeDailyCacheKey('czytania', date);
+  const cache = usePersistentCache<NiedzielaDailyReadings>(cacheKey);
+
+  useEffect(() => {
+    clearPersistentCacheByPrefix(CACHE_PREFIX, (key) => key === cacheKey);
+  }, [cacheKey]);
+
+  const query = useQuery({
+    queryKey: ['niedziela-readings', date],
+    queryFn: async () => {
+      const data = await fetchDailyReadings();
+      cache.save(data);
+      return data;
+    },
+    initialData: cache.data ?? undefined,
+    initialDataUpdatedAt: cache.savedAt ? new Date(cache.savedAt).getTime() : undefined,
+    enabled: !cache.hasValue,
+    staleTime: Infinity,
+    gcTime: Infinity,
+    retry: 3,
   });
+
+  return {
+    ...query,
+    savedAt: cache.savedAt,
+    isCachedForToday: cache.hasValue,
+  };
 }

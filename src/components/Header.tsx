@@ -9,7 +9,11 @@ type HeaderProps = {
 
 export function Header({ title, onBack, right, scrolled }: HeaderProps) {
   return (
-    <header className={'hdr' + (scrolled ? ' scrolled' : '')}>
+    <header
+      className={'hdr' + (scrolled ? ' scrolled' : '')}
+      data-has-back={onBack ? 'true' : 'false'}
+      data-has-right={right ? 'true' : 'false'}
+    >
       {onBack ? (
         <button className="hdr__btn left" onClick={onBack} aria-label="Wstecz">
           <Icon name="chevron-left" />

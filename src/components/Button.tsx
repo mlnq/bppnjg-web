@@ -9,16 +9,18 @@ type ButtonProps = {
   onClick?: () => void;
   type?: 'button' | 'submit';
   className?: string;
+  ariaLabel?: string;
 };
 
 export function Button({
   children, variant = 'wine', icon, iconRight, block,
-  onClick, type = 'button', className = '',
+  onClick, type = 'button', className = '', ariaLabel,
 }: ButtonProps) {
   return (
     <button
       type={type}
       onClick={onClick}
+      aria-label={ariaLabel}
       className={'btn btn--' + variant + (block ? ' btn--block' : '') + ' ' + className}
     >
       {icon && <Icon name={icon} />}

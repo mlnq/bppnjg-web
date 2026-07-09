@@ -1,4 +1,10 @@
+import { useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
+import {
+  clearPersistentCacheByPrefix,
+  makeDailyCacheKey,
+  usePersistentCache,
+} from './usePersistentCache';
 
 export type BreviaryOfficeId =
   | 'godzina-czytan'
@@ -26,6 +32,8 @@ export type BreviaryOffice = {
   sourceUrl: string;
   sections: BreviarySection[];
 };
+
+const CACHE_PREFIX = 'pg.brewiarz.';
 
 const OFFICE_CONFIG: Record<BreviaryOfficeId, { fileName: string; label: string }> = {
   'godzina-czytan': { fileName: 'godzczyt.php3', label: 'Godzina czytań' },
@@ -60,6 +68,13 @@ function latin1ToLatin2(v: string) {
 
 function getMonthDirectory(m: number) {
   return ['i','ii','iii','iv','v','vi','vii','viii','ix','x','xi','xii'][m];
+}
+
+function formatDateKey(date: Date) {
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, '0');
+  const d = String(date.getDate()).padStart(2, '0');
+  return `${y}-${m}-${d}`;
 }
 
 function getMonthPrefix(date: Date) {
@@ -279,12 +294,34 @@ async function fetchBreviaryOffice(office: BreviaryOfficeId): Promise<BreviaryOf
 }
 
 export function useBreviary(office: BreviaryOfficeId) {
-  return useQuery({
-    queryKey: ['breviary', office],
-    queryFn: () => fetchBreviaryOffice(office),
-    staleTime: 6 * 60 * 60 * 1000,
-    retry: 1,
+  const date = formatDateKey(new Date());
+  const cacheKey = makeDailyCacheKey('brewiarz', date, office);
+  const cache = usePersistentCache<BreviaryOffice>(cacheKey);
+
+  useEffect(() => {
+    clearPersistentCacheByPrefix(CACHE_PREFIX, (key) => key.endsWith(`.${date}`));
+  }, [date]);
+
+  const query = useQuery({
+    queryKey: ['breviary', office, date],
+    queryFn: async () => {
+      const data = await fetchBreviaryOffice(office);
+      cache.save(data);
+      return data;
+    },
+    initialData: cache.data ?? undefined,
+    initialDataUpdatedAt: cache.savedAt ? new Date(cache.savedAt).getTime() : undefined,
+    enabled: !cache.hasValue,
+    staleTime: Infinity,
+    gcTime: Infinity,
+    retry: 3,
   });
+
+  return {
+    ...query,
+    savedAt: cache.savedAt,
+    isCachedForToday: cache.hasValue,
+  };
 }
 
 export { OFFICE_CONFIG };

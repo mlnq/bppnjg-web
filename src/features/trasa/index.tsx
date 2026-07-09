@@ -6,7 +6,7 @@ import { usePozycja } from '../../lib/usePozycja';
 import type { ApiPilgrimage, ApiPilgrimageDay } from '../../data/types';
 import { fmt } from '../../lib/format';
 import { Icon } from '../../lib/icons';
-import { Header, Pill, Progress, SectionHead, Button, Eyebrow } from '../../components';
+import { Pill, Progress, SectionHead, Button, Eyebrow } from '../../components';
 import { TimelineItem } from './TimelineItem';
 
 export function TrasaScreen() {
@@ -17,7 +17,6 @@ export function TrasaScreen() {
 
 function TrasaLoaded({ pilgrimage, activeDay, tryb }: { pilgrimage: ApiPilgrimage; activeDay: ApiPilgrimageDay; tryb: 'auto' | 'gps' | 'plan' }) {
   const navigate = useNavigate();
-  const [scrolled, setScrolled] = useState(false);
   const activeIdx = pilgrimage.days.findIndex((d) => d.dayNumber === activeDay.dayNumber);
   const [idx, setIdx] = useState(activeIdx >= 0 ? activeIdx : 0);
   const day = pilgrimage.days[idx];
@@ -35,10 +34,8 @@ function TrasaLoaded({ pilgrimage, activeDay, tryb }: { pilgrimage: ApiPilgrimag
   const hasSchedule = day.stops.length > 1;
 
   return (
-    <>
-      <Header title="Trasa" scrolled={scrolled} />
-      <div className="viewport scroll" onScroll={(e) => setScrolled((e.target as HTMLElement).scrollTop > 4)}>
-        <div className="stage">
+    <div className="viewport scroll">
+      <div className="stage">
           <div className="dayswitch enter enter-1">
             <button className="iconbtn" disabled={idx === 0} style={{ opacity: idx === 0 ? 0.35 : 1 }}
               onClick={() => setIdx((i) => Math.max(0, i - 1))} aria-label="Poprzedni dzień">
@@ -118,8 +115,7 @@ function TrasaLoaded({ pilgrimage, activeDay, tryb }: { pilgrimage: ApiPilgrimag
               </div>
             </div>
           )}
-        </div>
       </div>
-    </>
+    </div>
   );
 }

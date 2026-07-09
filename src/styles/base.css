@@ -68,6 +68,26 @@ a { color: inherit; text-decoration: none; }
 .hdr__btn.right { justify-self: end; grid-column: 3; }
 .hdr__btn.left  { justify-self: start; grid-column: 1; }
 
+@media (max-width: 1039px) {
+  .hdr__title { display: none; }
+
+  .hdr[data-has-back="false"][data-has-right="false"] {
+    display: none;
+  }
+
+  .hdr[data-has-back="false"][data-has-right="true"] {
+    grid-template-columns: 1fr 48px;
+  }
+
+  .hdr[data-has-back="false"][data-has-right="true"] .hdr__btn.left {
+    display: none;
+  }
+
+  .hdr[data-has-back="false"][data-has-right="true"] .hdr__btn.right {
+    grid-column: 2;
+  }
+}
+
 /* Obszar przewijania ekranu */
 .viewport {
   flex: 1;
@@ -204,6 +224,21 @@ a { color: inherit; text-decoration: none; }
 }
 .iconbtn:hover { background: var(--rose-soft); border-color: var(--wine-300); }
 .iconbtn:active { transform: scale(.9); }
+
+.screen-tools {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s3);
+  margin-bottom: var(--s5);
+}
+.screen-tools--end { justify-content: flex-end; }
+.screen-tools__right {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: var(--s3);
+}
 
 /* Wiersz listy / nawigacyjny */
 .row {

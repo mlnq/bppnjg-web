@@ -7,8 +7,21 @@ import { Icon } from '../../lib/icons';
 export function KwatermistrzEntry() {
   const { nr } = useParams<{ nr: string }>();
   const navigate = useNavigate();
-  const { data } = useQuery({ queryKey: ['quartermaster'], queryFn: () => api.getQuartermaster() });
+  const { data, isLoading } = useQuery({ queryKey: ['quartermaster'], queryFn: () => api.getQuartermaster() });
   const entry = (data?.items ?? []).find((e) => e.id === nr) ?? data?.items?.[0];
+  if (isLoading) {
+    return (
+      <Reader
+        title="Kwatermistrz"
+        onBack={() => navigate(-1)}
+        kickerIcon="alert"
+        kickerLabel="Ładowanie"
+        headline="Komentarz dnia"
+        akapity={[]}
+        loading
+      />
+    );
+  }
   if (!entry) return null;
 
   const date = new Date(entry.publishedAt).toLocaleDateString('pl-PL', { day: 'numeric', month: 'long' });

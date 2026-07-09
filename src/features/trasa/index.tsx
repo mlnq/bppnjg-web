@@ -6,12 +6,13 @@ import { usePozycja } from '../../lib/usePozycja';
 import type { ApiPilgrimage, ApiPilgrimageDay } from '../../data/types';
 import { fmt } from '../../lib/format';
 import { Icon } from '../../lib/icons';
-import { Pill, Progress, SectionHead, Button, Eyebrow } from '../../components';
+import { Pill, Progress, SectionHead, Button, Eyebrow, Loader } from '../../components';
 import { TimelineItem } from './TimelineItem';
 
 export function TrasaScreen() {
   const { state, settings } = usePilgrimage();
-  if (state.status !== 'ok') return null;
+  if (state.status === 'loading') return <Loader fullscreen />;
+  if (state.status !== 'ok') return <p className="muted" style={{ padding: 32 }}>{state.message}</p>;
   return <TrasaLoaded pilgrimage={state.pilgrimage} activeDay={state.day} tryb={settings.tryb} />;
 }
 

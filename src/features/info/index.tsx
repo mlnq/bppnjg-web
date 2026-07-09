@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { api } from '../../data/api';
-import { Eyebrow, SectionHead } from '../../components';
+import { Eyebrow, Loader, SectionHead } from '../../components';
 import { Icon } from '../../lib/icons';
 import { NoticeCard } from './NoticeCard';
 import type { NewsItem } from '../../data/types';
@@ -14,7 +14,7 @@ function mapCategory(raw: string): NewsItem['category'] {
 export function InfoScreen() {
   const navigate = useNavigate();
 
-  const { data } = useQuery({
+  const { data, isLoading } = useQuery({
     queryKey: ['news'],
     queryFn: () => api.getNews(),
     refetchInterval: 2 * 60 * 1000,
@@ -34,6 +34,10 @@ export function InfoScreen() {
   return (
     <div className="viewport scroll">
       <div className="stage">
+          {isLoading ? (
+            <Loader />
+          ) : (
+            <>
           <Eyebrow className="enter enter-1" style={{ marginBottom: 'var(--s2)' }}>Komunikaty z trasy</Eyebrow>
           <div className="stack--lg stack enter enter-1">
             {pinned.map((n) => <NoticeCard key={n.id} item={n} onClick={() => navigate('/info/' + n.id)} />)}
@@ -45,6 +49,8 @@ export function InfoScreen() {
           <div className="center mt6">
             <span className="localnote"><Icon name="check" />Wszystkie komunikaty dostępne offline</span>
           </div>
+            </>
+          )}
       </div>
     </div>
   );

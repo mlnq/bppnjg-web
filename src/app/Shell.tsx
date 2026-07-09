@@ -1,6 +1,5 @@
 import { Outlet, NavLink } from 'react-router-dom';
 import { Icon } from '../lib/icons';
-import { usePilgrimage } from './PilgrimageContext';
 
 const TABS = [
   { to: '/', end: true, lbl: 'Start', icon: 'home' },
@@ -11,14 +10,13 @@ const TABS = [
 ] as const;
 
 export function Shell() {
-  const { settings } = usePilgrimage();
   return (
     <div
       className="app"
-      data-type={settings.type}
-      data-read={settings.read}
-      data-accent={settings.accent}
-      style={{ ['--read-scale' as string]: settings.readScale }}
+      data-type="spokoj"
+      data-read="sans"
+      data-accent="subtelny"
+      style={{ ['--read-scale' as string]: 1 }}
     >
       <Outlet />
       <nav className="tabbar" aria-label="Główna nawigacja">

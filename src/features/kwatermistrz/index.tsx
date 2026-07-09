@@ -1,11 +1,11 @@
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { api } from '../../data/api';
-import { Pill } from '../../components';
+import { Loader, Pill } from '../../components';
 
 export function KwatermistrzScreen() {
   const navigate = useNavigate();
-  const { data } = useQuery({
+  const { data, isLoading } = useQuery({
     queryKey: ['quartermaster'],
     queryFn: () => api.getQuartermaster(),
     refetchInterval: 2 * 60 * 1000,
@@ -15,6 +15,10 @@ export function KwatermistrzScreen() {
   return (
     <div className="viewport scroll">
       <div className="stage">
+          {isLoading ? (
+            <Loader />
+          ) : (
+            <>
           <p className="muted enter enter-1" style={{ fontSize: 15, lineHeight: 1.55, margin: '0 0 var(--s5)' }}>
             Wieczorne podsumowania dnia — nocleg, kuchnia, sprawy organizacyjne.
           </p>
@@ -36,6 +40,8 @@ export function KwatermistrzScreen() {
               );
             })}
           </div>
+            </>
+          )}
       </div>
     </div>
   );

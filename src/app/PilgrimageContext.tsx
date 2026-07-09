@@ -4,16 +4,12 @@ import { api } from '../data/api';
 import { useLocalStorage } from '../lib/useLocalStorage';
 
 export type Ustawienia = {
-  type: 'spokoj' | 'pielgrzym' | 'ostry';
-  read: 'sans' | 'serif';
-  accent: 'subtelny' | 'wyrazisty';
-  readScale: number;
   tryb: 'auto' | 'gps' | 'plan';
   devDay: number | null;
 };
 
 export const DOMYSLNE: Ustawienia = {
-  type: 'spokoj', read: 'sans', accent: 'subtelny', readScale: 1, tryb: 'auto',
+  tryb: 'auto',
   devDay: null,
 };
 

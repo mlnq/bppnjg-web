@@ -1,6 +1,6 @@
 import { useNavigate, useParams } from 'react-router-dom';
 import { usePilgrimage } from '../../app/PilgrimageContext';
-import { Reader } from '../../components';
+import { Loader, Reader } from '../../components';
 import { Icon } from '../../lib/icons';
 import type { Akapit } from '../../data/types';
 
@@ -13,7 +13,8 @@ export function KonferencjaScreen() {
   const navigate = useNavigate();
   const { nr } = useParams<{ nr: string }>();
   const { state } = usePilgrimage();
-  if (state.status !== 'ok') return null;
+  if (state.status === 'loading') return <Loader fullscreen />;
+  if (state.status !== 'ok') return <p className="muted" style={{ padding: 32 }}>{state.message}</p>;
 
   const dayNr = Number(nr);
   const day = state.pilgrimage.days.find((d) => d.dayNumber === dayNr) ?? state.day;

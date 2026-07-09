@@ -16,8 +16,21 @@ const CAT_ICON: Record<string, string> = {
 export function InfoDetail() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { data } = useQuery({ queryKey: ['news'], queryFn: () => api.getNews() });
+  const { data, isLoading } = useQuery({ queryKey: ['news'], queryFn: () => api.getNews() });
   const raw = (data?.items ?? []).find((i) => i.id === id);
+  if (isLoading) {
+    return (
+      <Reader
+        title="Komunikat"
+        onBack={() => navigate(-1)}
+        kickerIcon="message"
+        kickerLabel="Ładowanie"
+        headline="Komunikat"
+        akapity={[]}
+        loading
+      />
+    );
+  }
   if (!raw) return null;
 
   const cat = mapCategory(raw.category);

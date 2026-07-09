@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    { "source": "/api/:path*", "destination": "https://pilgrimage-admin.bppnjg.workers.dev/api/:path*" },
+    { "source": "/brewiarz-proxy/:path*", "destination": "https://brewiarz.pl/:path*" },
+    { "source": "/niedziela-proxy/:path*", "destination": "https://niezbednik.niedziela.pl/:path*" },
+    { "source": "/((?!api/|brewiarz-proxy/|niedziela-proxy/).*)", "destination": "/index.html" }
+  ]
+}

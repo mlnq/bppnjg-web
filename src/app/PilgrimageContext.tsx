@@ -22,8 +22,13 @@ type LoadState =
   | { status: 'error'; message: string }
   | { status: 'ok'; pilgrimage: ApiPilgrimage };
 
+export type CtxState =
+  | { status: 'loading' }
+  | { status: 'error'; message: string }
+  | { status: 'ok'; pilgrimage: ApiPilgrimage; day: ApiPilgrimageDay };
+
 type CtxValue = {
-  state: LoadState | { status: 'ok'; pilgrimage: ApiPilgrimage; day: ApiPilgrimageDay };
+  state: CtxState;
   settings: Ustawienia;
   setSettings: (s: Ustawienia) => void;
 };
@@ -62,6 +67,28 @@ export function usePilgrimage() {
   const ctx = useContext(Ctx);
   if (!ctx) throw new Error('usePilgrimage must be inside PilgrimageProvider');
   return ctx;
+}
+
+export function selectWindowState(p: ApiPilgrimage, devDay?: number | null): 'before' | 'active' | 'after' {
+  if (devDay !== null && devDay !== undefined) {
+    if (devDay < 1) return 'before';
+    if (devDay > p.totalDays) return 'after';
+    return 'active';
+  }
+  const YEAR = new Date().getFullYear();
+  const start = new Date(YEAR, 6, 30, 12);
+  const end = new Date(YEAR, 7, 12, 12);
+  const now = new Date(); now.setHours(12, 0, 0, 0);
+  if (now < start) return 'before';
+  if (now > end) return 'after';
+  return 'active';
+}
+
+export function getDaysUntilStart(): number {
+  const YEAR = new Date().getFullYear();
+  const start = new Date(YEAR, 6, 30, 12);
+  const now = new Date(); now.setHours(12, 0, 0, 0);
+  return Math.max(0, Math.ceil((start.getTime() - now.getTime()) / 86_400_000));
 }
 
 export function selectCurrentDay(p: ApiPilgrimage, devDay?: number | null): ApiPilgrimageDay | null {

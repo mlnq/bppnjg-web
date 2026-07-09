@@ -489,6 +489,17 @@ a { color: inherit; text-decoration: none; }
 .fade { animation: fade .35s ease both; }
 @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
 
+.loader { display: flex; align-items: center; justify-content: center; padding: var(--s10) 0; }
+.loader--full { min-height: 60vh; }
+.spinner {
+  display: inline-block;
+  border-radius: 50%;
+  border: 3px solid var(--rose-soft);
+  border-top-color: var(--wine);
+  animation: spin .7s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
 /* Utility */
 .muted { color: var(--muted); }
 .center { text-align: center; }

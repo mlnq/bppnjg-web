@@ -59,7 +59,7 @@ export function toDzien(day: ApiPilgrimageDay): Dzien {
     nr: day.dayNumber,
     od: day.stops[0]?.townName ?? '',
     do: day.stops[day.stops.length - 1]?.townName ?? '',
-    dystans: day.route.totalDistanceKm,
+    dystans: kmCum[kmCum.length - 1] || day.route.totalDistanceKm,
     przystanki: day.stops.map((s, i) => ({
       czas: s.time,
       km: kmCum[i],

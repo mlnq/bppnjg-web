@@ -9,3 +9,4 @@ export { SectionHead } from './SectionHead';
 export { ReadProgress } from './ReadProgress';
 export { Prose } from './Prose';
 export { Reader } from './Reader';
+export { Loader } from './Loader';

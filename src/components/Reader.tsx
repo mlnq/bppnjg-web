@@ -4,6 +4,7 @@ import { ReadProgress } from './ReadProgress';
 import { Chip } from './Chip';
 import { Eyebrow } from './Eyebrow';
 import { Prose } from './Prose';
+import { Loader } from './Loader';
 import type { Akapit } from '../data/types';
 
 type ReaderProps = {
@@ -17,11 +18,12 @@ type ReaderProps = {
   akapity: Akapit[];
   dropcap?: boolean;
   footer?: React.ReactNode;
+  loading?: boolean;
 };
 
 export function Reader({
   title, onBack, kickerIcon, kickerTone = 'rose',
-  kickerLabel, headline, byline, akapity, dropcap, footer,
+  kickerLabel, headline, byline, akapity, dropcap, footer, loading,
 }: ReaderProps) {
   const vp = useRef<HTMLDivElement>(null);
   const [scrolled, setScrolled] = useState(false);
@@ -43,7 +45,7 @@ export function Reader({
             <h1 className="reader__title">{headline}</h1>
             {byline}
             <hr className="reader__rule" />
-            <Prose akapity={akapity} dropcap={dropcap} />
+            {loading ? <Loader /> : <Prose akapity={akapity} dropcap={dropcap} />}
             {footer}
           </article>
         </div>

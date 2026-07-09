@@ -11,6 +11,10 @@ dist/
 # Environment
 .env
 .env.*
+env
+
+# TS build cache
+*.tsbuildinfo
 
 # Prototype files at root (keep untouched, not committed)
 app.css

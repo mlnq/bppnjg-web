@@ -26,6 +26,7 @@ function TrasaLoaded({ pilgrimage, activeDay, tryb }: { pilgrimage: ApiPilgrimag
   const kmCum = buildKmCumulative(day.stops);
 
   function stopState(stopKm: number): 'done' | 'now' | 'next' {
+    if (idx !== activeIdx) return 'next';
     if (stopKm <= pos.km - 0.5) return 'done';
     if (stopKm <= pos.km + 2) return 'now';
     return 'next';
@@ -67,12 +68,25 @@ function TrasaLoaded({ pilgrimage, activeDay, tryb }: { pilgrimage: ApiPilgrimag
                   <Pill variant="rose">Etap {day.dayNumber} z {pilgrimage.totalDays}</Pill>
                   <span className="eyebrow">{day.date}</span>
                 </div>
-                <div className="dial__num" style={{ marginTop: 'var(--s4)' }}>{fmt(pos.doCelu)}<small>km</small></div>
-                <Eyebrow wine>do celu</Eyebrow>
+                {idx === activeIdx ? (
+                  <>
+                    <div className="dial__num" style={{ marginTop: 'var(--s4)' }}>{fmt(pos.doCelu)}<small>km</small></div>
+                    <Eyebrow wine>do celu</Eyebrow>
+                  </>
+                ) : (
+                  <>
+                    <div className="dial__num" style={{ marginTop: 'var(--s4)', color: 'var(--ink-2)' }}>
+                      {fmt(kmCum[kmCum.length - 1] || day.route.totalDistanceKm)}<small style={{ color: 'var(--muted)' }}>km</small>
+                    </div>
+                    <Eyebrow>długość etapu</Eyebrow>
+                  </>
+                )}
                 <div className="dial__route mt3">{dzien.od}<span className="arrow">→</span>{dzien.do}</div>
-                <div className="mt4">
-                  <Progress pct={pos.pct} leftLabel={fmt(pos.km) + ' km przebyto'} rightLabel={fmt(pos.doCelu) + ' km do celu'} />
-                </div>
+                {idx === activeIdx && (
+                  <div className="mt4">
+                    <Progress pct={pos.pct} leftLabel={fmt(pos.km) + ' km przebyto'} rightLabel={fmt(pos.doCelu) + ' km do celu'} />
+                  </div>
+                )}
               </div>
 
               <SectionHead>Plan dnia</SectionHead>
@@ -90,7 +104,7 @@ function TrasaLoaded({ pilgrimage, activeDay, tryb }: { pilgrimage: ApiPilgrimag
                 </div>
               </div>
               <div className="center mt5">
-                <Button variant="ghost" icon="book" onClick={() => navigate('/konferencja/1')}>
+                <Button variant="ghost" icon="book" onClick={() => navigate('/konferencja/' + day.dayNumber)}>
                   Konferencja dnia
                 </Button>
               </div>

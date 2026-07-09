@@ -5,7 +5,7 @@ import { usePilgrimage } from './PilgrimageContext';
 const TABS = [
   { to: '/', end: true, lbl: 'Start', icon: 'home' },
   { to: '/trasa', lbl: 'Trasa', icon: 'map' },
-  { to: '/info', lbl: 'Info', icon: 'message', dot: true },
+  { to: '/info', lbl: 'Info', icon: 'message' },
   { to: '/kwatermistrz', lbl: 'Kwater.', icon: 'alert' },
   { to: '/niezbednik', lbl: 'Niezbędnik', icon: 'book-open' },
 ] as const;
@@ -26,7 +26,6 @@ export function Shell() {
           {TABS.map((t) => (
             <NavLink key={t.to} to={t.to} end={'end' in t ? t.end : undefined} className="tab">
               <Icon name={t.icon} />
-              {'dot' in t && t.dot && <span className="tab__dot" />}
               <span className="tab__lbl">{t.lbl}</span>
             </NavLink>
           ))}

@@ -9,13 +9,7 @@ import { usePozycja } from "../../lib/usePozycja";
 import type { ApiPilgrimage, ApiPilgrimageDay } from "../../data/types";
 import { fmt } from "../../lib/format";
 import { Icon } from "../../lib/icons";
-import {
-  Pill,
-  Progress,
-  Eyebrow,
-  Row,
-  Loader,
-} from "../../components";
+import { Pill, Progress, Eyebrow, Row, Loader } from "../../components";
 import { WeatherWidget } from "./WeatherWidget";
 import { StatusWidget } from "./StatusWidget";
 
@@ -210,17 +204,6 @@ function StartLoaded({
       <div className="stage stage--rail">
         <div className="stage__grid">
           <div>
-            <div className="hero enter enter-1">
-              <div
-                className="hero__img"
-                style={{
-                  height: 230,
-                  background: "var(--paper-sunk)",
-                  borderRadius: "var(--r-card)",
-                }}
-              />
-            </div>
-
             <div
               className="card enter enter-2"
               style={{ padding: "var(--s5)", marginTop: "var(--s4)" }}

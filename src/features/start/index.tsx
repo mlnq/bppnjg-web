@@ -35,12 +35,12 @@ function PilgrimageStateScreen({
       className="viewport"
       style={{
         display: "flex",
-        alignItems: "flex-start",
+        alignItems: "center",
         justifyContent: "center",
         padding: "var(--s5)",
       }}
     >
-      <div style={{ maxWidth: 380, width: "100%" }}>
+      <div style={{ maxWidth: 380, width: "100%", marginBottom: "var(--s16)" }}>
         <div
           className="card enter enter-1"
           style={{

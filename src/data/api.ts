@@ -1,17 +1,27 @@
 import type {
   BootstrapResponse, NewsResponse, QuartermasterResponse,
-  RouteStateRequest, CurrentRouteStateDto,
+  RouteStateRequest, CurrentRouteStateDto, Konferencja, KonferencjaListItem,
 } from './types';
 import type { Dzien } from '../lib/position';
 import type { ApiPilgrimageDay } from './types';
+import { srtNaAkapity } from '../lib/srt-txt';
 
 import bootstrapSeed from './seeds/bootstrap.json';
 import newsSeed from './seeds/news.json';
 import quartermasterSeed from './seeds/quartermaster.json';
+import konferencjeSeed from './seeds/konferencje.json';
 
 const BASE = (import.meta.env.VITE_API_BASE_URL as string | undefined) ?? '';
 const USE_SEEDS = import.meta.env.VITE_USE_SEEDS === 'true';
 const YEAR = '2025';
+
+export function konferencjaId(nr: number): string {
+  return `dzien-${String(nr).padStart(2, '0')}`;
+}
+
+export function konferencjaNr(id: string): number {
+  return Number(id.replace(/^dzien-/, ''));
+}
 
 function fetchJson<T>(path: string, init?: RequestInit): Promise<T> {
   const url = BASE ? `${BASE}${path}` : path;
@@ -35,6 +45,27 @@ export const api = {
   getQuartermaster(): Promise<QuartermasterResponse> {
     if (USE_SEEDS) return Promise.resolve(quartermasterSeed as QuartermasterResponse);
     return fetchJson<QuartermasterResponse>('/api/quartermaster-comments');
+  },
+
+  getKonferencje(): Promise<KonferencjaListItem[]> {
+    if (USE_SEEDS) {
+      return Promise.resolve(
+        (konferencjeSeed as Konferencja[]).map(({ id, tytul, autor }) => ({ id, tytul, autor })),
+      );
+    }
+    return fetchJson<KonferencjaListItem[]>('/api/konferencje');
+  },
+
+  async getKonferencja(nr: number): Promise<Konferencja> {
+    const id = konferencjaId(nr);
+    if (USE_SEEDS) {
+      const found = (konferencjeSeed as Konferencja[]).find((k) => k.id === id);
+      if (!found) throw new Error(`Konferencja ${id} not found`);
+      return found;
+    }
+    const k = await fetchJson<Konferencja>(`/api/konferencje/${id}`);
+    const srt = await fetch(k.srtUrl).then((r) => r.text());
+    return { ...k, akapity: srtNaAkapity(srt) };
   },
 
   postRouteState(body: RouteStateRequest): Promise<CurrentRouteStateDto> {

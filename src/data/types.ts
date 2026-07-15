@@ -121,3 +121,14 @@ export type ContentModule = {
   sub: string;
   akapity: Akapit[];
 };
+
+export type Konferencja = {
+  id: string;
+  tytul: string;
+  autor: string;
+  mp3Url: string;
+  srtUrl: string;
+  akapity?: Akapit[];
+};
+
+export type KonferencjaListItem = Pick<Konferencja, 'id' | 'tytul' | 'autor'>;

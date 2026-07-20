@@ -59,6 +59,25 @@ export default defineConfig({
             options: { cacheName: 'api-days', expiration: { maxAgeSeconds: 86400 } },
           },
           {
+            urlPattern: /\/api\/konferencje(\/[\w-]+)?$/,
+            handler: 'StaleWhileRevalidate',
+            options: { cacheName: 'api-konferencje', expiration: { maxAgeSeconds: 300 } },
+          },
+          {
+            urlPattern: ({ request }) => request.destination === 'audio',
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'konferencje-audio',
+              expiration: { maxEntries: 60, maxAgeSeconds: 31536000 },
+              rangeRequests: true,
+            },
+          },
+          {
+            urlPattern: /\.(?:srt|txt)$/,
+            handler: 'CacheFirst',
+            options: { cacheName: 'konferencje-transkrypcje', expiration: { maxEntries: 60, maxAgeSeconds: 31536000 } },
+          },
+          {
             urlPattern: /https:\/\/fonts\.googleapis\.com/,
             handler: 'StaleWhileRevalidate',
             options: { cacheName: 'google-fonts-stylesheets' },

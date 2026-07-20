@@ -11,6 +11,7 @@ import { KwatermistrzEntry } from '../features/kwatermistrz/Entry';
 import { NiezbednikScreen } from '../features/niezbednik';
 import { NiezbednikReader } from '../features/niezbednik/Reader';
 import { KonferencjaScreen } from '../features/konferencja';
+import { KonferencjaPlayer } from '../features/konferencja/Player';
 import { UstawieniaScreen } from '../features/ustawienia';
 
 const queryClient = new QueryClient({
@@ -32,7 +33,8 @@ export function App() {
               <Route path="kwatermistrz/:nr" element={<KwatermistrzEntry />} />
               <Route path="niezbednik" element={<NiezbednikScreen />} />
               <Route path="niezbednik/:modul" element={<NiezbednikReader />} />
-              <Route path="konferencja/:nr" element={<KonferencjaScreen />} />
+              <Route path="konferencja" element={<KonferencjaScreen />} />
+              <Route path="konferencja/:nr" element={<KonferencjaPlayer />} />
               <Route path="ustawienia" element={<UstawieniaScreen />} />
               <Route path="*" element={<StartScreen />} />
             </Route>

@@ -69,11 +69,11 @@ export function NiezbednikScreen() {
         <SectionHead>Polecane dziś</SectionHead>
         <div className="enter enter-2">
           <Row
-            icon="music"
+            icon="book"
             tone="rose"
-            title="Pieśń pielgrzyma"
-            meta="Pieśń pielgrzymkowa na Jasną Górę"
-            onClick={() => navigate("/niezbednik/spiewnik")}
+            title="Wszystkie konferencje"
+            meta="Nagrania i transkrypcje"
+            onClick={() => navigate("/konferencja")}
           />
         </div>
 

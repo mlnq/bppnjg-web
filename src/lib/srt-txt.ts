@@ -1,4 +1,4 @@
-import type { Akapit } from '../data/types';
+import type { Akapit, SrtCue } from '../data/types';
 
 // ——— TXT: pusta linia = nowy akapit. Domyślnie typ 'p'. ———
 export function txtNaAkapity(txt: string): Akapit[] {
@@ -13,17 +13,7 @@ export function txtNaAkapity(txt: string): Akapit[] {
 // ——— SRT: scal cue'y w akapity. Nowy akapit, gdy przerwa między cue'ami
 //     przekracza `progMs` (domyślnie 2,2 s — naturalna pauza). ———
 export function srtNaAkapity(srt: string, progMs = 2200): Akapit[] {
-  type Cue = { start: number; end: number; tekst: string };
-  const cues: Cue[] = [];
-
-  for (const blok of srt.replace(/\r\n/g, '\n').trim().split(/\n{2,}/)) {
-    const linie = blok.split('\n');
-    const tcIdx = linie.findIndex((l) => l.includes('-->'));
-    if (tcIdx === -1) continue;
-    const [a, z] = linie[tcIdx].split('-->').map((s) => czasNaMs(s));
-    const tekst = linie.slice(tcIdx + 1).join(' ').trim();
-    if (tekst) cues.push({ start: a, end: z, tekst });
-  }
+  const cues = srtNaCues(srt);
 
   const akapity: Akapit[] = [];
   let buf = '';
@@ -33,11 +23,27 @@ export function srtNaAkapity(srt: string, progMs = 2200): Akapit[] {
       akapity.push({ typ: 'p', t: buf.trim() });
       buf = '';
     }
-    buf += (buf ? ' ' : '') + c.tekst;
+    buf += (buf ? ' ' : '') + c.text;
     prevEnd = c.end;
   }
   if (buf.trim()) akapity.push({ typ: 'p', t: buf.trim() });
   return akapity;
+}
+
+/** Parses timed SRT cues for synchronized transcript rendering. */
+export function srtNaCues(srt: string): SrtCue[] {
+  const cues: SrtCue[] = [];
+
+  for (const blok of srt.replace(/\r\n/g, '\n').trim().split(/\n{2,}/)) {
+    const linie = blok.split('\n');
+    const tcIdx = linie.findIndex((l) => l.includes('-->'));
+    if (tcIdx === -1) continue;
+    const [start, end] = linie[tcIdx].split('-->').map((s) => czasNaMs(s));
+    const text = linie.slice(tcIdx + 1).join(' ').trim();
+    if (text) cues.push({ start, end, text });
+  }
+
+  return cues;
 }
 
 // "00:01:23,456" lub "00:01:23.456" -> milisekundy

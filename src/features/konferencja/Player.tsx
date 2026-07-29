@@ -1,9 +1,9 @@
-import { useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { Prose, Loader, Button } from '../../components';
 import { useAudioKonferencja, SPEED_LBL } from '../../lib/useAudioKonferencja';
-import { api } from '../../data/api';
+import { api, konferencjaId, konferencjaNr } from '../../data/api';
 
 const fmt = (s: number) => {
   s = Math.max(0, Math.round(s || 0));
@@ -14,26 +14,42 @@ const FALLBACK_PEAKS = Array.from({ length: 46 }, (_, i) =>
   0.32 + 0.6 * Math.abs(Math.sin(i * 0.7) * Math.cos(i * 0.29 + 1.3)));
 
 export function KonferencjaPlayer() {
-  const { nr } = useParams<{ nr: string }>();
+  const { nr: routeId } = useParams<{ nr: string }>();
   const nav = useNavigate();
-  const dayNr = Number(nr);
+  const isDayNumber = /^\d+$/.test(routeId ?? '');
+  const conferenceId = isDayNumber ? konferencjaId(Number(routeId)) : (routeId ?? '');
+  const parsedDayNr = konferencjaNr(conferenceId);
+  const dayNr = Number.isFinite(parsedDayNr) ? parsedDayNr : 0;
 
   const { data: k, isLoading } = useQuery({
-    queryKey: ['konferencja', dayNr],
-    queryFn: () => api.getKonferencja(dayNr),
+    queryKey: ['konferencja', conferenceId],
+    queryFn: () => api.getKonferencjaById(conferenceId),
+    enabled: Boolean(conferenceId),
   });
 
-  const { ref, t, dur, pct, playing, rate, toggle, seek, skip, restart, cycleSpeed } =
+  const { ref, t, dur, pct, playing, rate, toggle, seek, skip, restart, stop, cycleSpeed } =
     useAudioKonferencja(dayNr, k?.mp3Url ?? '');
 
   const [scrolled, setScrolled] = useState(false);
   const trackRef = useRef<HTMLDivElement | null>(null);
+  const cueRefs = useRef<Array<HTMLButtonElement | null>>([]);
   const dragging = useRef(false);
 
   const inicjaly = useMemo(() => {
     if (!k) return '';
     return k.autor.split(' ').filter((w) => /^[A-ZŻŹĆŁ]/.test(w)).map((w) => w[0]).slice(0, 2).join('');
   }, [k]);
+
+  const activeCue = useMemo(() => {
+    if (!k?.cues) return -1;
+    const currentMs = t * 1000;
+    return k.cues.findIndex((cue) => currentMs >= cue.start && currentMs < cue.end);
+  }, [k?.cues, t]);
+
+  useEffect(() => {
+    if (!playing || activeCue < 0) return;
+    cueRefs.current[activeCue]?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }, [activeCue, playing]);
 
   if (isLoading) return <Loader fullscreen />;
 
@@ -66,7 +82,7 @@ export function KonferencjaPlayer() {
           <div className="konf-hero__art">
             <Headphones size={120} stroke="#fff" />
           </div>
-          <div className="konf-hero__eyebrow">Konferencja · Dzień {dayNr}</div>
+          <div className="konf-hero__eyebrow">{dayNr ? `Konferencja · Dzień ${dayNr}` : 'Konferencja'}</div>
           <h1 className="konf-hero__title">{k.tytul}</h1>
           <div className="konf-hero__by">
             <span className="konf-hero__av">{inicjaly}</span>
@@ -104,9 +120,9 @@ export function KonferencjaPlayer() {
                 <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><path d="M12 5a8 8 0 1 1-7.6 5.6" /><path d="M4 4v5h5" /></svg>
                 <span className="konf-ctl__n">10</span>
               </button>
-              <button className="konf-play" onClick={toggle} aria-label={playing ? 'Pauza' : 'Odtwórz'}>
+              <button className="konf-play" onClick={playing ? stop : toggle} aria-label={playing ? 'Zatrzymaj' : 'Odtwórz'}>
                 {playing
-                  ? <svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor"><rect x="7" y="5" width="3.4" height="14" rx="1.2" /><rect x="13.6" y="5" width="3.4" height="14" rx="1.2" /></svg>
+                  ? <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="12" height="12" rx="1.5" /></svg>
                   : <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor" style={{ marginLeft: 3 }}><path d="M8 5.2v13.6L19 12z" /></svg>}
               </button>
               <button className="konf-ctl" onClick={() => skip(10)} title="10 sekund naprzód">
@@ -121,7 +137,22 @@ export function KonferencjaPlayer() {
             <span className="eyebrow eyebrow--wine">Transkrypcja nagrania</span>
             <span className="localnote" style={{ marginLeft: 'auto' }}>do czytania</span>
           </div>
-          <Prose akapity={k.akapity ?? []} dropcap />
+          {k.cues?.length ? (
+            <div className="prose konf-transcript" aria-label="Synchronizowana transkrypcja">
+              {k.cues.map((cue, index) => (
+                <button
+                  key={`${cue.start}-${index}`}
+                  ref={(element) => { cueRefs.current[index] = element; }}
+                  type="button"
+                  className={'konf-transcript__cue' + (index === activeCue ? ' is-active' : '')}
+                  onClick={() => seek(cue.start / 1000)}
+                  aria-current={index === activeCue ? 'true' : undefined}
+                >
+                  {cue.text}
+                </button>
+              ))}
+            </div>
+          ) : <Prose akapity={k.akapity ?? []} dropcap />}
 
           <div className="center" style={{ marginTop: 'var(--s6)' }}>
             <span className="localnote">Zapisane offline — nagranie i tekst</span>
@@ -137,9 +168,9 @@ export function KonferencjaPlayer() {
         <button className="hdr__btn left" style={{ width: 38, height: 38, flex: 'none' }} onClick={() => nav(-1)} aria-label="Wstecz">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6" /></svg>
         </button>
-        <button className="konf-mini__play" onClick={toggle} aria-label={playing ? 'Pauza' : 'Odtwórz'}>
+        <button className="konf-mini__play" onClick={playing ? stop : toggle} aria-label={playing ? 'Zatrzymaj' : 'Odtwórz'}>
           {playing
-            ? <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><rect x="7" y="5" width="3.4" height="14" rx="1.2" /><rect x="13.6" y="5" width="3.4" height="14" rx="1.2" /></svg>
+            ? <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="12" height="12" rx="1.5" /></svg>
             : <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" style={{ marginLeft: 2 }}><path d="M8 5.2v13.6L19 12z" /></svg>}
         </button>
         <span style={{ flex: 1, minWidth: 0 }}>

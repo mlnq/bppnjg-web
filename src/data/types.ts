@@ -4,6 +4,8 @@ export type ApiStop = {
   name: string | null;
   townName: string | null;
   time: string;
+  /** Custom planned arrival time for this waypoint, normally `HH:mm`. */
+  scheduledAt?: string | null;
   type: 'start' | 'info' | 'night';
   distanceToNextKm: number;
   durationMin?: number | null;
@@ -27,13 +29,6 @@ export type ApiPilgrimageDay = {
   };
   stops: ApiStop[];
   reflection?: { title: string };
-  conference?: {
-    id?: number;
-    date?: string;
-    author?: string;
-    title: string;
-    content: string;
-  };
   weather?: {
     temperatureC: number;
     icon: 'sunny' | 'cloudy' | 'rain' | 'storm' | 'partlyCloudy';
@@ -113,6 +108,12 @@ export type RouteStateRequest = {
 export type Akapit =
   | { typ: 'lead' | 'p' | 'h3' | 'verse' | 'resp' | 'drop' | 'source'; t: string };
 
+export type SrtCue = {
+  start: number;
+  end: number;
+  text: string;
+};
+
 export type ContentModule = {
   modul: string;
   kolor: 'rose' | 'amber' | 'green' | 'blue';
@@ -129,6 +130,7 @@ export type Konferencja = {
   mp3Url: string;
   srtUrl: string;
   akapity?: Akapit[];
+  cues?: SrtCue[];
 };
 
 export type KonferencjaListItem = Pick<Konferencja, 'id' | 'tytul' | 'autor'>;

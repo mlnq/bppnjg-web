@@ -12,6 +12,7 @@ import { Icon } from "../../lib/icons";
 import { Pill, Progress, Eyebrow, Row, Loader } from "../../components";
 import { WeatherWidget } from "./WeatherWidget";
 import { StatusWidget } from "./StatusWidget";
+import { KonferencjaRow } from "./KonferencjaRow";
 
 type StateScreenProps = {
   eyebrow: string;
@@ -263,13 +264,7 @@ function StartLoaded({
                 />
               </div>
               <div className="enter enter-4">
-                <Row
-                  icon="book"
-                  tone="rose"
-                  title="Konferencja dnia"
-                  meta={day.conference?.title ?? "Zostanie dodana przed etapem"}
-                  onClick={() => navigate("/konferencja/" + day.dayNumber)}
-                />
+                <KonferencjaRow dayNumber={day.dayNumber} />
               </div>
             </div>
 

@@ -53,13 +53,6 @@
           { "id": "d3_s5", "orderIndex": 5, "name": null, "townName": "Winna-Poświętna", "time": "15:00", "type": "info", "distanceToNextKm": 3.3, "latitude": null, "longitude": null, "badge": "Konferencja", "description": "Konferencja w drodze" },
           { "id": "d3_s6", "orderIndex": 6, "name": "Zespół Szkół, hala sportowa", "townName": "Ciechanowiec", "time": "17:30", "type": "night", "distanceToNextKm": 0, "latitude": null, "longitude": null }
         ],
-        "conference": {
-          "id": 3,
-          "date": "2025-08-01",
-          "author": "ks. Tomasz Wadowski",
-          "title": "Iść w rytmie, który nie jest twój",
-          "content": "Pierwszego dnia każdy idzie tak, jak chce. Drugiego — tak, jak musi. Trzeci dzień jest najtrudniejszy, bo to dzień, w którym uczysz się iść tak, jak idzie grupa."
-        },
         "weather": { "temperatureC": 17, "icon": "partlyCloudy" },
         "news": [
           { "id": "n1", "title": "Zmiana miejsca postoju obiadowego", "summary": "Ze względu na prace obiad będzie w Pobikrach przy szkole.", "category": "logistics", "publishedAt": "2025-08-01T08:10:00Z", "isPinned": true },

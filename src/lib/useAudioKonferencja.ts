@@ -20,7 +20,6 @@ export function useAudioKonferencja(nr: number, _mp3Url: string, dlugosc = 0) {
     const el = ref.current;
     if (el) el.currentTime = saved;
     setPlaying(false);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [nr]);
 
   useEffect(() => {
@@ -46,8 +45,7 @@ export function useAudioKonferencja(nr: number, _mp3Url: string, dlugosc = 0) {
       el.removeEventListener('pause', onPause);
       el.removeEventListener('ended', onEnd);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [nr]);
+  }, [nr, _mp3Url, dlugosc]);
 
   useEffect(() => { if (ref.current) ref.current.playbackRate = rate; }, [rate]);
 
@@ -69,11 +67,20 @@ export function useAudioKonferencja(nr: number, _mp3Url: string, dlugosc = 0) {
 
   const restart = useCallback(() => seek(0), [seek]);
 
+  const stop = useCallback(() => {
+    const el = ref.current;
+    if (!el) return;
+    el.pause();
+    el.currentTime = 0;
+    setT(0);
+    localStorage.removeItem(key);
+  }, [key]);
+
   const cycleSpeed = useCallback(() => {
     setRate((r) => SPEEDS[(SPEEDS.indexOf(r as typeof SPEEDS[number]) + 1) % SPEEDS.length]);
   }, []);
 
   const pct = dur ? Math.min(1, t / dur) : 0;
 
-  return { ref, t, dur, pct, playing, rate, toggle, seek, skip, restart, cycleSpeed };
+  return { ref, t, dur, pct, playing, rate, toggle, seek, skip, restart, stop, cycleSpeed };
 }

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { srtNaAkapity, txtNaAkapity } from './srt-txt';
+import { srtNaAkapity, srtNaCues, txtNaAkapity } from './srt-txt';
 
 describe('txtNaAkapity', () => {
   it('splits on blank lines into paragraphs', () => {
@@ -40,5 +40,13 @@ describe('srtNaAkapity', () => {
     const akapity = srtNaAkapity(srt);
     expect(akapity).toHaveLength(2);
     expect(akapity[1]).toEqual({ typ: 'p', t: 'Nowy akapit po dłuższej ciszy.' });
+  });
+});
+
+describe('srtNaCues', () => {
+  it('preserves timestamps and text for synchronized playback', () => {
+    expect(srtNaCues('1\n00:00:01,250 --> 00:00:03,500\nPierwszy tekst')).toEqual([
+      { start: 1250, end: 3500, text: 'Pierwszy tekst' },
+    ]);
   });
 });

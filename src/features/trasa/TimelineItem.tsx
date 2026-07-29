@@ -1,5 +1,6 @@
 import { Icon } from '../../lib/icons';
 import { fmt } from '../../lib/format';
+import { scheduledStopTime } from '../../data/api';
 import type { ApiStop } from '../../data/types';
 
 const STOP_ICON: Record<string, string> = {
@@ -24,7 +25,7 @@ export function TimelineItem({ stop, state: s, distToNext }: ItemProps) {
       <span className="tl__node"><i /></span>
       <div className="tl__stop">
         <div className="tl__time">
-          <Icon name={icon} />{stop.time}
+          <Icon name={icon} />{scheduledStopTime(stop)}
           {stop.durationMin ? (
             <span className="badge tl__badge"><Icon name="timer" />{stop.durationMin} min</span>
           ) : null}

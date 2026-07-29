@@ -430,6 +430,16 @@ a { color: inherit; text-decoration: none; }
 .prose .resp { color: var(--wine); font-weight: 700; }
 .prose p.source { font-size: calc(12px * var(--read-scale)); font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin: 0 0 .35em; }
 
+.konf-transcript { display: grid; gap: 4px; }
+.konf-transcript__cue {
+  display: block; width: 100%; border: 0; border-radius: 8px; padding: 7px 9px;
+  margin: 0; background: transparent; color: inherit; font: inherit; line-height: inherit;
+  letter-spacing: inherit; text-align: left; cursor: pointer; transition: background .18s ease, color .18s ease;
+}
+.konf-transcript__cue:hover { background: var(--paper-sunk); }
+.konf-transcript__cue.is-active { background: var(--rose); color: var(--wine-700); font-weight: 700; }
+.konf-transcript__cue:focus-visible { outline: 2px solid var(--wine); outline-offset: 2px; }
+
 /* Pasek postępu czytania */
 .readbar { position: sticky; top: 0; height: 3px; background: transparent; z-index: 25; }
 .readbar__fill { height: 100%; width: 0; background: var(--wine); transition: width .1s linear; }

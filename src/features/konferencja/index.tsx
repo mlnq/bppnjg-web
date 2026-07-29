@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { Header, Loader } from '../../components';
 import { KonferencjaCard } from './KonferencjaCard';
-import { api, konferencjaNr } from '../../data/api';
+import { api } from '../../data/api';
 
 export function KonferencjaScreen() {
   const nav = useNavigate();
@@ -27,7 +27,7 @@ export function KonferencjaScreen() {
           ) : (
             <div className="stack stack--lg">
               {lista.map((k) => (
-                <KonferencjaCard key={k.id} k={k} onOpen={() => nav(`/konferencja/${konferencjaNr(k.id)}`)} />
+                <KonferencjaCard key={k.id} k={k} onOpen={() => nav(`/konferencja/${k.id}`)} />
               ))}
             </div>
           )}

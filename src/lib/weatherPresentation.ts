@@ -69,3 +69,10 @@ export function weatherLabel(icon: WeatherIcon): string {
 export function weatherIconName(icon: WeatherIcon): string {
   return WEATHER_ICON[icon];
 }
+
+export function weatherTone(icon: WeatherIcon): 'sun' | 'cloud' | 'rain' | 'storm' {
+  if (icon === 'overcast' || icon === 'fog' || icon === 'rimeFog') return 'cloud';
+  if (icon === 'thunderstorm' || icon === 'thunderstormLightHail' || icon === 'thunderstormHeavyHail') return 'storm';
+  if (icon.includes('rain') || icon.includes('drizzle') || icon.includes('snow')) return 'rain';
+  return 'sun';
+}

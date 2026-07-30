@@ -198,6 +198,7 @@ function StartLoaded({
   const navigate = useNavigate();
   const dzien = toDzien(day);
   const pos = usePozycja(dzien, tryb);
+  const gpsActive = pos.zrodlo === "gps";
 
   return (
     <div className="viewport scroll">
@@ -235,8 +236,8 @@ function StartLoaded({
               <div style={{ marginTop: "var(--s4)" }}>
                 <Progress
                   pct={pos.pct}
-                  leftLabel={fmt(pos.km) + " km przebyto"}
-                  rightLabel={fmt(pos.doCelu) + " km do celu"}
+                  leftLabel={gpsActive ? fmt(pos.km) + " km przebyto" : "Planowany postęp: " + pos.pct + "%"}
+                  rightLabel={gpsActive ? fmt(pos.doCelu) + " km do celu" : "Szacowany etap: " + fmt(pos.doCelu) + " km do celu"}
                 />
               </div>
               {pos.zrodlo === "plan" && (

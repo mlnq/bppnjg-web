@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { api } from '../../data/api';
-import { Loader, Pill } from '../../components';
+import { Eyebrow, Loader, Pill } from '../../components';
 
 export function KwatermistrzScreen() {
   const navigate = useNavigate();
@@ -19,10 +19,10 @@ export function KwatermistrzScreen() {
             <Loader />
           ) : (
             <>
-          <p className="muted enter enter-1" style={{ fontSize: 15, lineHeight: 1.55, margin: '0 0 var(--s5)' }}>
-            Wieczorne podsumowania dnia — nocleg, kuchnia, sprawy organizacyjne.
-          </p>
-          <div className="stack--lg stack">
+          <Eyebrow className="enter enter-1" style={{ marginBottom: 'var(--s2)' }}>
+            Wieczorne podsumowania dnia kwatermistrza
+          </Eyebrow>
+          <div className="stack--lg stack enter enter-1">
             {items.map((e, i) => {
               const date = new Date(e.publishedAt).toLocaleDateString('pl-PL', { day: 'numeric', month: 'short' });
               const preview = e.content.split('\n')[0] ?? '';

@@ -1,0 +1,46 @@
+[
+  {
+    "nr": 3, "dzien": 3, "dataLbl": "13 maja", "stan": "teraz",
+    "tytul": "Iść w rytmie, który nie jest twój",
+    "autor": "ks. Tomasz Wadowski", "funkcja": "przewodnik pielgrzymki",
+    "mp3Url": "/audio/konferencje/dzien-03.mp3", "dlugosc": 708,
+    "akapity": [
+      { "typ": "lead", "t": "Pierwszego dnia każdy idzie tak, jak chce. Drugiego — tak, jak musi. Trzeci dzień jest najtrudniejszy, bo to dzień, w którym uczysz się iść tak, jak idzie grupa." },
+      { "typ": "drop", "t": "Pielgrzymka ma swój rytm i ten rytm nie pyta cię o zdanie. Wstajesz, gdy jeszcze ciemno. Idziesz, gdy słońce dopiero ogrzewa pola. Zatrzymujesz się nie wtedy, kiedy ty jesteś zmęczony, ale wtedy, kiedy zmęczony jest ktoś obok ciebie." },
+      { "typ": "p", "t": "Łatwo to powiedzieć przy stole. Trudniej, kiedy trzydziesty kilometr, a do noclegu jeszcze godzina. I właśnie w tym napięciu dzieje się coś ważnego." },
+      { "typ": "h3", "t": "Krok, który nie należy do ciebie" },
+      { "typ": "p", "t": "Kiedy dopasowujesz krok do drugiego człowieka, oddajesz coś ze swojej wolności. Ale dostajesz w zamian coś, czego nie da się zdobyć w pojedynkę: poczucie, że nie idziesz sam." },
+      { "typ": "verse", "t": "„Jedni drugich brzemiona noście, a tak wypełnicie prawo Chrystusowe.” (Ga 6,2)" },
+      { "typ": "p", "t": "Trzeci dzień mija. Ale to dziś nauczysz się czegoś, co zostanie z tobą dłużej niż odciski: że najpiękniej idzie się w rytmie, którego się nie wybrało." }
+    ]
+  },
+  {
+    "nr": 2, "dzien": 2, "dataLbl": "12 maja", "stan": "odsluchane",
+    "tytul": "Pierwszy krok należy do Boga",
+    "autor": "ks. Andrzej Lemann", "funkcja": "ojciec duchowny",
+    "mp3Url": "/audio/konferencje/dzien-02.mp3", "dlugosc": 572,
+    "akapity": [
+      { "typ": "lead", "t": "Drugi dzień jest dniem prawdy. Zachwyt pierwszego poranka już opadł, a do celu wciąż daleko. Zostaje samo postanowienie: idę dalej." },
+      { "typ": "verse", "t": "„Nie wyście Mnie wybrali, ale Ja was wybrałem.” (J 15,16)" },
+      { "typ": "p", "t": "Dzisiejszy trud nie jest tylko twoim wysiłkiem. Pierwszy krok należał do Tego, który cię tu przyprowadził. Twoim zadaniem jest tylko nie zawrócić." }
+    ]
+  },
+  {
+    "nr": 1, "dzien": 1, "dataLbl": "11 maja", "stan": "odsluchane",
+    "tytul": "Po co komu pielgrzymka",
+    "autor": "ks. Tomasz Wadowski", "funkcja": "przewodnik pielgrzymki",
+    "mp3Url": "/audio/konferencje/dzien-01.mp3", "dlugosc": 435,
+    "akapity": [
+      { "typ": "lead", "t": "Można pojechać autobusem i być na Jasnej Górze za pół dnia. Skoro chodzi o cel, po co iść dwa tygodnie pieszo? Bo na pielgrzymce celem nie jest tylko miejsce." },
+      { "typ": "p", "t": "Idziemy, żeby coś zostawić po drodze. Pośpiech, hałas, przekonanie, że wszystko zależy od nas. Każdy kilometr odejmuje po trochu z tego bagażu, którego nie widać." },
+      { "typ": "resp", "t": "W: Któryś za nas cierpiał rany. O: Jezu Chryste, zmiłuj się nad nami." }
+    ]
+  },
+  {
+    "nr": 4, "dzien": 4, "dataLbl": "14 maja", "stan": "wkrotce",
+    "tytul": "Cisza, której się boimy",
+    "autor": "s. Weronika", "funkcja": "rekolekcje w drodze",
+    "mp3Url": "", "dlugosc": 0,
+    "akapity": []
+  }
+]

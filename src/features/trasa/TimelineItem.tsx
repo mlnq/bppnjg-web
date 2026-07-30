@@ -3,7 +3,7 @@ import { fmt } from "../../lib/format";
 import { scheduledStopTime } from "../../data/api";
 import type { ApiStop } from "../../data/types";
 import type { StopWeather } from "../../lib/usePlanWeather";
-import { weatherIconName, weatherLabel } from "../../lib/weatherPresentation";
+import { weatherIconName, weatherLabel, weatherTone } from "../../lib/weatherPresentation";
 
 const STOP_ICON: Record<string, string> = {
   start: "flag",
@@ -61,7 +61,7 @@ export function TimelineItem({
           <div className="tl__place">{stop.townName ?? stop.name}</div>
           {weather && (
             <div
-              className="tl__forecast"
+              className={`tl__forecast tl__forecast--${weatherTone(weather.icon)}`}
               aria-label={`Pogoda o ${scheduledStopTime(stop)} w ${stop.townName ?? stop.name}: ${weatherLabel(weather.icon)}`}
             >
               <Icon name={weatherIconName(weather.icon)} />

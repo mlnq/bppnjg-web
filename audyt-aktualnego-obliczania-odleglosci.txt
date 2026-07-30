@@ -1,0 +1,111 @@
+Aktualny sposób wyliczania postępu pielgrzyma
+==============================================
+
+1. Pobieranie lokalizacji
+
+Aplikacja uruchamia navigator.geolocation.watchPosition() tylko gdy ekran
+jest widoczny i tryb pozycji nie jest ustawiony na „plan”.
+
+Parametry geolokalizacji:
+- enableHighAccuracy: true
+- maximumAge: 15 000 ms
+- timeout: 20 000 ms
+
+Po schowaniu aplikacji/karty obserwowanie GPS jest zatrzymywane. Przy
+ponownym wyświetleniu uruchamia się ponownie.
+
+
+2. Kiedy GPS jest uznawany za wiarygodny
+
+Fix jest używany tylko, gdy:
+- ma mniej niż 30 000 ms;
+- deklarowana przez urządzenie dokładność jest lepsza niż 50 m.
+
+W przeciwnym przypadku aplikacja przechodzi na pozycję wyliczaną z planu.
+
+
+3. Liczenie dystansu z GPS
+
+Obecna implementacja nie używa rzeczywistej geometrii trasy pieszej ani
+routingu drogowego. Przystanki mają opcjonalne współrzędne; odcinki między
+kolejnymi przystankami są traktowane jako proste linie.
+
+Aktualny punkt GPS jest rzutowany na najbliższy taki odcinek. Pozycja na
+odcinku jest zamieniana na skumulowany kilometraż etapu, korzystając z
+zadeklarowanych odległości pomiędzy przystankami.
+
+Konsekwencje:
+- na zakrętach i drogach równoległych wynik może być niedokładny;
+- nie istnieje próg „off-route” — punkt daleko od trasy również zostanie
+  przypisany do najbliższego odcinka;
+- gdy etap ma mniej niż dwa przystanki ze współrzędnymi, GPS nie może zostać
+  użyty.
+
+W aktualnych danych seed współrzędne przystanków są puste, więc w takim
+środowisku zawsze zostaje użyty harmonogram.
+
+
+4. Fallback: harmonogram
+
+Gdy GPS nie jest dostępny, jest odrzucony lub tryb to „plan”, aplikacja:
+- pobiera aktualną godzinę lokalną;
+- odczytuje czas i skumulowany kilometraż kolejnych przystanków;
+- liniowo interpoluje dystans między dwoma sąsiednimi przystankami;
+- ogranicza wynik do zakresu 0..długość etapu;
+- wylicza km przebyto, km do celu i procent etapu.
+
+Przed godziną pierwszego przystanku wynik wynosi 0 km. Po godzinie ostatniego
+przystanku wynosi pełną długość etapu. Harmonogram jest przeliczany co minutę.
+
+Ważne ograniczenie: durationMin przystanków nie jest używane. Podczas postoju
+licznik nadal przesuwa się liniowo w stronę kolejnego punktu zamiast pozostać
+na miejscu przez czas przerwy.
+
+
+5. Deduplikacja i częstotliwość
+
+Nie ma własnej deduplikacji kolejnych fixów GPS:
+- brak minimalnego dystansu między zaakceptowanymi punktami;
+- brak minimalnego czasu między aktualizacjami stanu;
+- każdy poprawny callback watchPosition aktualizuje stan i ponownie liczy
+  postęp.
+
+maximumAge: 15 s nie jest deduplikacją aplikacyjną. To jedynie informacja dla
+przeglądarki, że może zwrócić zapamiętaną pozycję nie starszą niż 15 sekund.
+
+
+6. Backend i refetch lokalizacji
+
+W kliencie istnieje metoda API dla:
+
+POST /api/pilgrimages/2025/days/:dayId/route-state
+
+Metoda mogłaby wysłać latitude, longitude i timestamp, a backend mógłby
+zwrócić traveledDistanceKm oraz remainingDistanceKm. Nie jest ona jednak
+wywoływana przez żaden ekran ani hook.
+
+Aktualna częstotliwość wysyłania/refetchu lokalizacji do backendu: 0 razy.
+Wszystkie aktualne obliczenia pozycji są wykonywane lokalnie w przeglądarce.
+
+
+7. Obecne wyświetlane wartości
+
+Dla aktywnego etapu aplikacja pokazuje:
+- km przebyto;
+- km do celu dnia;
+- procent postępu.
+
+Wartości pochodzą z GPS tylko wtedy, gdy są dostępne współrzędne przystanków
+i GPS przejdzie filtry świeżości oraz dokładności. W pozostałych przypadkach
+pochodzą z harmonogramu.
+
+
+8. Najważniejsze ograniczenia obecnego rozwiązania
+
+- Brak prawdziwej trasy (GPX/polyline), tylko odcinki proste.
+- Brak wykrywania zejścia z trasy.
+- Brak deduplikacji i throttlingu GPS.
+- Brak wysyłania GPS do istniejącego endpointu backendu.
+- Postoje nie zatrzymują progresu harmonogramowego.
+- GPS użytkownika opisuje pozycję konkretnego użytkownika, nie całej grupy
+  pielgrzymkowej.

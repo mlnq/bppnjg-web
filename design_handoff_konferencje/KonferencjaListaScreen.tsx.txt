@@ -1,0 +1,80 @@
+// =============================================================================
+// KonferencjaListaScreen.tsx — archiwum konferencji (lista dni).
+// Skopiuj do src/features/konferencje/KonferencjaListaScreen.tsx.
+// Trasa: <Route path="konferencja" element={<KonferencjaListaScreen/>} />
+// =============================================================================
+import { useNavigate } from 'react-router-dom';
+import { Header } from '../../components/Header';
+import { getKonferencje } from '../../data/api';
+import type { Konferencja } from '../../data/types';
+
+const fmt = (s: number) => `${Math.floor(s / 60)}:${String(Math.round(s % 60)).padStart(2, '0')}`;
+
+export function KonferencjaListaScreen() {
+  const nav = useNavigate();
+  const lista = getKonferencje();
+
+  return (
+    <>
+      <Header title="Konferencje" />
+      <div className="viewport scroll">
+        <div className="stage" style={{ paddingTop: 'var(--s4)' }}>
+          <div className="eyebrow eyebrow--wine" style={{ marginBottom: 'var(--s2)' }}>Słowo na drogę</div>
+          <p className="muted" style={{ fontSize: 14.5, lineHeight: 1.55, margin: '0 0 var(--s5)' }}>
+            Codzienna konferencja w formie nagrania. Słuchaj w drodze, a tekst przeczytasz w dowolnej chwili — także bez zasięgu.
+          </p>
+
+          <div className="stack stack--lg">
+            {lista.map((k) => <KartaKonferencji key={k.nr} k={k} onOpen={() => nav(`/konferencja/${k.nr}`)} />)}
+          </div>
+
+          <div className="center" style={{ marginTop: 'var(--s6)' }}>
+            <span className="localnote">Nagrania i teksty zapisane na telefonie</span>
+          </div>
+        </div>
+      </div>
+    </>
+  );
+}
+
+function KartaKonferencji({ k, onOpen }: { k: Konferencja; onOpen: () => void }) {
+  const inProg = k.stan === 'teraz';
+  const done = k.stan === 'odsluchane';
+  const soon = k.stan === 'wkrotce';
+  const cover = inProg ? 'teraz' : soon ? 'soon' : 'done';
+
+  // pozycja wznowienia z localStorage (gdy ktoś zaczął słuchać)
+  const saved = Number(localStorage.getItem(`pg.konf.${k.nr}`)) || (inProg ? Math.round(k.dlugosc * 0.27) : 0);
+  const bp = k.dlugosc ? Math.min(1, saved / k.dlugosc) : 0;
+
+  return (
+    <button className="konf-card" disabled={soon} onClick={soon ? undefined : onOpen}>
+      <span className={`konf-card__cover konf-card__cover--${cover}`}>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M4 14v-3a8 8 0 0 1 16 0v3" /><rect x="3.2" y="13.4" width="4.4" height="7" rx="2" /><rect x="16.4" y="13.4" width="4.4" height="7" rx="2" /></svg>
+        <span style={{ marginTop: 5 }}>{k.dzien}</span>
+      </span>
+
+      <span className="konf-card__body">
+        <span className="konf-card__meta">
+          <span className="pill pill--rose" style={{ padding: '3px 9px', fontSize: 10.5 }}>Dzień {k.dzien}</span>
+          <span style={{ fontSize: 12, color: 'var(--muted)' }}>{k.dataLbl}</span>
+          <span className="konf-card__dur">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" /></svg>
+            {soon ? '—' : fmt(k.dlugosc)}
+          </span>
+        </span>
+
+        <span className="konf-card__title">{k.tytul}</span>
+        <span className="konf-card__autor">{k.autor}</span>
+
+        <span className="konf-card__stan">
+          {inProg && <span className="konf-card__bar"><i style={{ width: bp * 100 + '%' }} /></span>}
+          <span className={`konf-card__lbl konf-card__lbl--${cover}`}>
+            {done && <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><path d="m5 12 5 5L20 7" /></svg>}
+            {inProg ? `Wznów · ${fmt(saved)}` : done ? 'Odsłuchane' : 'Dostępna 14 maja'}
+          </span>
+        </span>
+      </span>
+    </button>
+  );
+}

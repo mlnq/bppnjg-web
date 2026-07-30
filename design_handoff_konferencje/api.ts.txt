@@ -1,0 +1,26 @@
+// =============================================================================
+// api.ts (fragment dot. konferencji) — na start statyczny seed, docelowo fetch.
+// Skopiuj do src/data/api.ts (dopisz). Patrz też konferencje.seed.json.
+// =============================================================================
+import seed from './konferencje.seed.json';
+import type { Konferencja } from './types';
+// import { srtNaAkapity, txtNaAkapity } from '../lib/srt-txt';
+
+export function getKonferencje(): Konferencja[] {
+  return seed as Konferencja[];
+}
+export function getKonferencja(nr: number): Konferencja {
+  return (seed as Konferencja[]).find((k) => k.nr === nr) ?? (seed as Konferencja[])[0];
+}
+
+// Docelowo (REST + cache offline). Transkrypcję parsujesz z dołączonego pliku:
+//
+// export async function getKonferencja(nr: number): Promise<Konferencja> {
+//   const k = await fetchJson<Omit<Konferencja,'akapity'> & { transkryptUrl: string }>(
+//     `/api/konferencje/${nr}`);
+//   const txt = await fetch(k.transkryptUrl).then(r => r.text());
+//   const akapity = k.transkryptUrl.endsWith('.srt')
+//     ? srtNaAkapity(txt)
+//     : txtNaAkapity(txt);
+//   return { ...k, akapity };
+// }

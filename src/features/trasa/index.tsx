@@ -26,6 +26,7 @@ function TrasaLoaded({ pilgrimage, activeDay, tryb }: { pilgrimage: ApiPilgrimag
   const pos = usePozycja(dzien, tryb);
   const kmCum = buildKmCumulative(day.stops);
   const weather = usePlanWeather(day.stops);
+  const gpsActive = pos.zrodlo === 'gps';
 
   function stopState(stopKm: number): 'done' | 'now' | 'next' {
     if (idx !== activeIdx) return 'next';
@@ -84,7 +85,11 @@ function TrasaLoaded({ pilgrimage, activeDay, tryb }: { pilgrimage: ApiPilgrimag
                 <div className="dial__route mt3">{dzien.od}<span className="arrow">→</span>{dzien.do}</div>
                 {idx === activeIdx && (
                   <div className="mt4">
-                    <Progress pct={pos.pct} leftLabel={fmt(pos.km) + ' km przebyto'} rightLabel={fmt(pos.doCelu) + ' km do celu'} />
+                    <Progress
+                      pct={pos.pct}
+                      leftLabel={gpsActive ? fmt(pos.km) + ' km przebyto' : 'Planowany postęp: ' + pos.pct + '%'}
+                      rightLabel={gpsActive ? fmt(pos.doCelu) + ' km do celu' : 'Szacowany etap: ' + fmt(pos.doCelu) + ' km do celu'}
+                    />
                   </div>
                 )}
               </div>

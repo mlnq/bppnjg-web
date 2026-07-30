@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="_ds/pielgrzym-aplikacja-pielgrzymkowa-ca716e41-30f8-4680-8391-ad6d7c175172/app.css">
+  <script src="_ds/pielgrzym-aplikacja-pielgrzymkowa-ca716e41-30f8-4680-8391-ad6d7c175172/_ds_bundle.js"></script>
+  <style>
+    @keyframes barIn { from { transform: translateY(-100%); } to { transform: none; } }
+    .konf-app *::-webkit-scrollbar { width: 0; height: 0; }
+  </style>
+</helmet>
+
+<div class="konf-app" style="height:100%; display:flex; flex-direction:column; background:var(--paper); font-family:var(--font-body); overflow:hidden;">
+
+  <!-- ===================== LISTA ===================== -->
+  <sc-if value="{{ isLista }}" hint-placeholder-val="{{ true }}">
+  <div style="height:100%; display:flex; flex-direction:column;">
+    <header class="hdr" style="position:relative;">
+      <span class="hdr__btn left"></span>
+      <h1 class="hdr__title">Konferencje</h1>
+      <span class="hdr__btn right"></span>
+    </header>
+    <div class="viewport scroll">
+      <div class="stage" style="padding-top:var(--s4);">
+        <div class="eyebrow enter enter-1" style="margin-bottom:var(--s2);">Słowo na drogę · {{ pielgrzymka }}</div>
+        <p class="muted enter enter-1" style="font-size:14.5px; line-height:1.55; margin:0 0 var(--s5);">
+          Codzienna konferencja w formie nagrania. Słuchaj w drodze, a tekst przeczytasz w dowolnej chwili — także bez zasięgu.
+        </p>
+
+        <div class="stack--lg stack">
+          <sc-for list="{{ lista }}" as="k" hint-placeholder-count="4">
+            <button class="enter" onClick="{{ k.open }}" disabled="{{ k.disabled }}"
+              style="{{ k.cardStyle }}">
+              <span style="{{ k.coverStyle }}">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14v-3a8 8 0 0 1 16 0v3"/><rect x="3.2" y="13.4" width="4.4" height="7" rx="2"/><rect x="16.4" y="13.4" width="4.4" height="7" rx="2"/></svg>
+                <span style="font-family:var(--font-head); font-weight:800; font-size:13px; letter-spacing:.02em; margin-top:5px;">{{ k.coverNum }}</span>
+              </span>
+              <span style="flex:1; min-width:0; text-align:left;">
+                <span style="display:flex; align-items:center; gap:7px; margin-bottom:5px;">
+                  <span class="pill pill--rose" style="padding:3px 9px; font-size:10.5px;">{{ k.dzienLbl }}</span>
+                  <span style="font-size:12px; color:var(--muted);">{{ k.dataLbl }}</span>
+                  <span style="{{ k.durStyle }}">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+                    {{ k.durLbl }}
+                  </span>
+                </span>
+                <span style="display:block; font-family:var(--font-head); font-weight:700; font-size:16px; line-height:1.22; color:var(--ink); letter-spacing:-0.01em;">{{ k.tytul }}</span>
+                <span style="display:block; font-size:13px; color:var(--ink-2); margin-top:3px;">{{ k.autor }}</span>
+                <span style="{{ k.stanRowStyle }}">
+                  <sc-if value="{{ k.showBar }}" hint-placeholder-val="{{ true }}">
+                    <span style="flex:1; height:5px; border-radius:999px; background:var(--paper-sunk); overflow:hidden;">
+                      <span style="{{ k.barFillStyle }}"></span>
+                    </span>
+                  </sc-if>
+                  <span style="{{ k.stanLblStyle }}">
+                    <span style="{{ k.stanIconStyle }}"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5L20 7"/></svg></span>
+                    {{ k.stanLbl }}
+                  </span>
+                </span>
+              </span>
+            </button>
+          </sc-for>
+        </div>
+
+        <div class="center" style="margin-top:var(--s6);">
+          <span class="localnote"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--green);"><path d="m5 12 5 5L20 7"/></svg>Nagrania i teksty zapisane na telefonie</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  </sc-if>
+
+  <!-- ===================== SZCZEGÓŁ — WARIANT A: SŁUCHOWISKO ===================== -->
+  <sc-if value="{{ isA }}" hint-placeholder-val="{{ true }}">
+  <div style="position:relative; height:100%; overflow:hidden;">
+    <div class="viewport scroll" onScroll="{{ onScroll }}" style="height:100%;">
+      <!-- HERO -->
+      <div style="position:relative; padding:64px var(--s5) var(--s6); background:linear-gradient(165deg, var(--wine) 0%, var(--wine-700) 70%, #4d0f24 100%); color:#fff; overflow:hidden;">
+        <div style="position:absolute; right:-40px; top:-30px; width:200px; height:200px; border-radius:50%; background:rgba(255,255,255,.06);"></div>
+        <div style="position:absolute; right:24px; top:30px; opacity:.16;">
+          <svg width="120" height="120" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14v-3a8 8 0 0 1 16 0v3"/><rect x="3.2" y="13.4" width="4.4" height="7" rx="2"/><rect x="16.4" y="13.4" width="4.4" height="7" rx="2"/></svg>
+        </div>
+        <div style="position:relative;">
+          <div style="font-family:var(--font-head); font-size:11.5px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:var(--rose);">Konferencja · {{ curDzienLbl }}</div>
+          <h1 style="font-family:var(--font-head); font-weight:800; font-size:27px; line-height:1.12; letter-spacing:-0.02em; margin:10px 0 0; max-width:88%; text-wrap:balance;">{{ curTytul }}</h1>
+          <div style="display:flex; align-items:center; gap:9px; margin-top:14px;">
+            <span style="width:30px; height:30px; border-radius:50%; background:rgba(255,255,255,.16); display:inline-flex; align-items:center; justify-content:center; font-family:var(--font-head); font-weight:700; font-size:12px;">{{ curInicjaly }}</span>
+            <span style="font-size:13.5px; color:rgba(255,255,255,.92);"><b style="font-weight:700;">{{ curAutor }}</b> · {{ curFunkcja }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- PLAYER CARD -->
+      <div class="stage" style="padding-top:var(--s5); padding-bottom:var(--s4);">
+        <div class="card" style="margin-top:-44px; padding:var(--s5); position:relative;">
+          <div ref="{{ trackRef }}" onPointerDown="{{ onTrackDown }}" onPointerMove="{{ onTrackMove }}" onPointerUp="{{ onTrackUp }}"
+            style="display:flex; align-items:center; justify-content:space-between; gap:2px; height:50px; cursor:pointer; touch-action:none;">
+            <sc-for list="{{ wave }}" as="bar" hint-placeholder-count="46">
+              <span style="{{ bar.style }}"></span>
+            </sc-for>
+          </div>
+          <div style="display:flex; justify-content:space-between; margin-top:8px; font-family:var(--font-head); font-weight:700; font-size:12px; color:var(--muted);">
+            <span style="color:var(--wine);">{{ elapsed }}</span>
+            <span>{{ total }}</span>
+          </div>
+          <div style="display:flex; align-items:center; justify-content:center; gap:14px; margin-top:var(--s4);">
+            <button onClick="{{ restart }}" title="Od początku"
+              style="width:40px; height:40px; border-radius:50%; background:var(--surface-soft); border:1px solid var(--line); color:var(--ink-2); display:inline-flex; align-items:center; justify-content:center; flex:none;">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M18 19 8 12l10-7z"/><rect x="5" y="5" width="2.2" height="14" rx="1"/></svg>
+            </button>
+            <button onClick="{{ back10 }}" title="10 sekund wstecz"
+              style="position:relative; width:46px; height:46px; border-radius:50%; background:var(--surface-soft); border:1px solid var(--line); color:var(--wine); display:inline-flex; align-items:center; justify-content:center; flex:none;">
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5a8 8 0 1 1-7.6 5.6"/><path d="M4 4v5h5"/></svg>
+              <span style="position:absolute; top:53%; left:50%; transform:translate(-50%,-50%); font-family:var(--font-head); font-weight:800; font-size:9px; letter-spacing:-0.02em;">10</span>
+            </button>
+            <button onClick="{{ toggle }}"
+              style="width:66px; height:66px; border-radius:50%; background:var(--wine); color:#fff; display:inline-flex; align-items:center; justify-content:center; flex:none; box-shadow:0 10px 24px -10px rgba(124,29,63,.7);">
+              <sc-if value="{{ playing }}" hint-placeholder-val="{{ false }}">
+                <svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor" stroke="none"><rect x="7" y="5" width="3.4" height="14" rx="1.2"/><rect x="13.6" y="5" width="3.4" height="14" rx="1.2"/></svg>
+              </sc-if>
+              <sc-if value="{{ notPlaying }}" hint-placeholder-val="{{ true }}">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor" stroke="none" style="margin-left:3px;"><path d="M8 5.2v13.6L19 12z"/></svg>
+              </sc-if>
+            </button>
+            <button onClick="{{ fwd10 }}" title="10 sekund naprzód"
+              style="position:relative; width:46px; height:46px; border-radius:50%; background:var(--surface-soft); border:1px solid var(--line); color:var(--wine); display:inline-flex; align-items:center; justify-content:center; flex:none;">
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5a8 8 0 1 0 7.6 5.6"/><path d="M20 4v5h-5"/></svg>
+              <span style="position:absolute; top:53%; left:50%; transform:translate(-50%,-50%); font-family:var(--font-head); font-weight:800; font-size:9px; letter-spacing:-0.02em;">10</span>
+            </button>
+            <button onClick="{{ cycleSpeed }}"
+              style="min-width:40px; height:40px; padding:0 11px; border-radius:999px; background:var(--surface-soft); border:1px solid var(--line); color:var(--wine); font-family:var(--font-head); font-weight:800; font-size:13px; display:inline-flex; align-items:center; justify-content:center; flex:none;">{{ speedLbl }}</button>
+          </div>
+        </div>
+
+        <!-- TRANSCRIPT -->
+        <div style="display:flex; align-items:center; gap:8px; margin:var(--s7) 0 var(--s4);">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="var(--wine)" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M5 6h14"/><path d="M5 12h14"/><path d="M5 18h8"/></svg>
+          <span class="eyebrow eyebrow--wine">Transkrypcja nagrania</span>
+          <span style="margin-left:auto;" class="localnote">do czytania</span>
+        </div>
+        <div class="prose">
+          <sc-for list="{{ proza }}" as="ak" hint-placeholder-count="6">
+            <p class="{{ ak.cls }}" style="{{ ak.style }}">{{ ak.t }}</p>
+          </sc-for>
+        </div>
+        <div class="center" style="margin-top:var(--s6);">
+          <span class="localnote"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--green);"><path d="m5 12 5 5L20 7"/></svg>Zapisane offline — wersja MP3 i tekst</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- FLOATING BACK (góra hero) -->
+    <button onClick="{{ back }}" style="{{ floatBackStyle }}">
+      <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+    </button>
+
+    <!-- MINI-BAR (po przewinięciu) -->
+    <div style="{{ miniBarStyle }}">
+      <button onClick="{{ back }}" class="hdr__btn left" style="width:38px; height:38px; flex:none;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+      </button>
+      <button onClick="{{ toggle }}" style="width:38px; height:38px; border-radius:50%; background:var(--wine); color:#fff; display:inline-flex; align-items:center; justify-content:center; flex:none;">
+        <sc-if value="{{ playing }}" hint-placeholder-val="{{ false }}">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="none"><rect x="7" y="5" width="3.4" height="14" rx="1.2"/><rect x="13.6" y="5" width="3.4" height="14" rx="1.2"/></svg>
+        </sc-if>
+        <sc-if value="{{ notPlaying }}" hint-placeholder-val="{{ true }}">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" stroke="none" style="margin-left:2px;"><path d="M8 5.2v13.6L19 12z"/></svg>
+        </sc-if>
+      </button>
+      <span style="flex:1; min-width:0;">
+        <span style="display:block; font-family:var(--font-head); font-weight:700; font-size:13px; color:var(--ink); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">{{ curTytul }}</span>
+        <span style="display:flex; align-items:center; gap:6px; margin-top:3px;">
+          <span style="flex:1; height:4px; border-radius:999px; background:var(--paper-sunk); overflow:hidden;"><span style="{{ miniFillStyle }}"></span></span>
+          <span style="font-family:var(--font-head); font-weight:700; font-size:10.5px; color:var(--muted);">{{ elapsed }}</span>
+        </span>
+      </span>
+      <button onClick="{{ cycleSpeed }}" style="min-width:36px; height:30px; padding:0 9px; border-radius:999px; background:var(--surface-soft); border:1px solid var(--line); color:var(--wine); font-family:var(--font-head); font-weight:800; font-size:12px; flex:none;">{{ speedLbl }}</button>
+    </div>
+  </div>
+  </sc-if>
+
+  <!-- ===================== SZCZEGÓŁ — WARIANT B: CZYTELNIA ===================== -->
+  <sc-if value="{{ isB }}" hint-placeholder-val="{{ true }}">
+  <div style="position:relative; height:100%; display:flex; flex-direction:column; overflow:hidden;">
+    <header class="hdr scrolled" style="position:relative;">
+      <button class="hdr__btn left" onClick="{{ back }}" aria-label="Wstecz">
+        <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+      </button>
+      <h1 class="hdr__title">Konferencja</h1>
+      <span class="hdr__btn right"></span>
+    </header>
+
+    <div class="viewport scroll" style="flex:1; min-height:0;">
+      <div class="stage" style="padding-top:var(--s5); padding-bottom:var(--s8);">
+        <article class="reader">
+          <div class="reader__kicker">
+            <span class="chip chip--rose" style="width:34px; height:34px; border-radius:11px; font-size:17px;">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14v-3a8 8 0 0 1 16 0v3"/><rect x="3.2" y="13.4" width="4.4" height="7" rx="2"/><rect x="16.4" y="13.4" width="4.4" height="7" rx="2"/></svg>
+            </span>
+            <span class="eyebrow eyebrow--wine">Konferencja · {{ curDzienLbl }}</span>
+          </div>
+          <h1 class="reader__title">{{ curTytul }}</h1>
+          <div class="reader__byline">
+            <span class="av">{{ curInicjaly }}</span>
+            <span><b style="color:var(--ink); font-weight:700;">{{ curAutor }}</b> · {{ curFunkcja }}</span>
+            <span style="margin-left:auto;">{{ total }}</span>
+          </div>
+          <hr class="reader__rule">
+          <div class="prose">
+            <sc-for list="{{ proza }}" as="ak" hint-placeholder-count="6">
+              <p class="{{ ak.cls }}" style="{{ ak.style }}">{{ ak.t }}</p>
+            </sc-for>
+          </div>
+          <div class="center" style="margin-top:var(--s6);">
+            <span class="localnote"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--green);"><path d="m5 12 5 5L20 7"/></svg>Tekst i nagranie dostępne bez zasięgu</span>
+          </div>
+        </article>
+      </div>
+    </div>
+
+    <!-- DOCK PLAYER (stały, na dole) -->
+    <div style="flex:none; background:color-mix(in oklab, var(--surface) 96%, transparent); backdrop-filter:blur(14px) saturate(1.2); -webkit-backdrop-filter:blur(14px) saturate(1.2); border-top:1px solid var(--line); box-shadow:0 -8px 24px -18px rgba(28,28,46,.5); padding:var(--s3) var(--s4) calc(var(--s3) + 4px);">
+      <div style="display:flex; align-items:center; gap:var(--s3);">
+        <button onClick="{{ toggle }}" style="width:46px; height:46px; border-radius:50%; background:var(--wine); color:#fff; display:inline-flex; align-items:center; justify-content:center; flex:none; box-shadow:0 8px 18px -9px rgba(124,29,63,.7);">
+          <sc-if value="{{ playing }}" hint-placeholder-val="{{ false }}">
+            <svg width="19" height="19" viewBox="0 0 24 24" fill="currentColor" stroke="none"><rect x="7" y="5" width="3.4" height="14" rx="1.2"/><rect x="13.6" y="5" width="3.4" height="14" rx="1.2"/></svg>
+          </sc-if>
+          <sc-if value="{{ notPlaying }}" hint-placeholder-val="{{ true }}">
+            <svg width="21" height="21" viewBox="0 0 24 24" fill="currentColor" stroke="none" style="margin-left:2px;"><path d="M8 5.2v13.6L19 12z"/></svg>
+          </sc-if>
+        </button>
+        <div style="flex:1; min-width:0;">
+          <div style="display:flex; align-items:center; gap:8px;">
+            <span style="font-family:var(--font-head); font-weight:700; font-size:13px; color:var(--ink); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; flex:1; min-width:0;">{{ curTytul }}</span>
+            <button onClick="{{ cycleSpeed }}" style="min-width:38px; height:26px; padding:0 9px; border-radius:999px; background:var(--surface-soft); border:1px solid var(--line); color:var(--wine); font-family:var(--font-head); font-weight:800; font-size:12px; flex:none;">{{ speedLbl }}</button>
+          </div>
+          <div style="display:flex; align-items:center; gap:8px; margin-top:7px;">
+            <span style="font-family:var(--font-head); font-weight:700; font-size:11px; color:var(--wine); min-width:34px;">{{ elapsed }}</span>
+            <span ref="{{ trackRef }}" onPointerDown="{{ onTrackDown }}" onPointerMove="{{ onTrackMove }}" onPointerUp="{{ onTrackUp }}"
+              style="flex:1; height:6px; border-radius:999px; background:var(--paper-sunk); position:relative; cursor:pointer; touch-action:none;">
+              <span style="{{ dockFillStyle }}"></span>
+              <span style="{{ dockThumbStyle }}"></span>
+            </span>
+            <span style="font-family:var(--font-head); font-weight:700; font-size:11px; color:var(--muted); min-width:34px; text-align:right;">{{ total }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  </sc-if>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:390,&quot;height&quot;:800},&quot;variant&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;a&quot;,&quot;b&quot;],&quot;default&quot;:&quot;a&quot;,&quot;tsType&quot;:&quot;'a'|'b'&quot;,&quot;section&quot;:&quot;Wariant&quot;}}">
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { screen: "lista", curNr: null, playing: false, t: 0, rate: 1, scrolled: false };
+    this.trackRef = React.createRef();
+    this._drag = false;
+    this.SPEEDS = [0.75, 1, 1.25, 1.5, 2];
+    this.SPEED_LBL = { 0.75: "0,75×", 1: "1×", 1.25: "1,25×", 1.5: "1,5×", 2: "2×" };
+    this.wave = Array.from({ length: 46 }, (_, i) =>
+      0.32 + 0.6 * Math.abs(Math.sin(i * 0.7) * Math.cos(i * 0.29 + 1.3)));
+    this.DATA = [
+      {
+        nr: 3, dzien: 3, dzienLbl: "Dzień 3", dataLbl: "13 maja", dur: 708, stan: "teraz",
+        tytul: "Iść w rytmie, który nie jest twój", autor: "ks. Tomasz Wadowski", funkcja: "przewodnik pielgrzymki",
+        akapity: [
+          { typ: "lead", t: "Pierwszego dnia każdy idzie tak, jak chce. Drugiego — tak, jak musi. Trzeci dzień jest najtrudniejszy, bo to dzień, w którym uczysz się iść tak, jak idzie grupa." },
+          { typ: "drop", t: "Pielgrzymka ma swój rytm i ten rytm nie pyta cię o zdanie. Wstajesz, gdy jeszcze ciemno. Idziesz, gdy słońce dopiero ogrzewa pola. Zatrzymujesz się nie wtedy, kiedy ty jesteś zmęczony, ale wtedy, kiedy zmęczony jest ktoś obok ciebie. To jest pierwsza lekcja drogi: przestać być środkiem własnego świata." },
+          { typ: "p", t: "Łatwo to powiedzieć przy stole. Trudniej, kiedy trzydziesty kilometr, a do noclegu jeszcze godzina. Wtedy ciało chce swojego rytmu — szybciej, byle dojść; albo wolniej, byle odpocząć. A grupa idzie swoim. I właśnie w tym napięciu dzieje się coś ważnego." },
+          { typ: "h3", t: "Krok, który nie należy do ciebie" },
+          { typ: "p", t: "Kiedy dopasowujesz krok do drugiego człowieka, oddajesz coś ze swojej wolności. Ale dostajesz w zamian coś, czego nie da się zdobyć w pojedynkę: poczucie, że nie idziesz sam. Że droga nie jest wyłącznie twoim wysiłkiem, ale wspólnym dziełem." },
+          { typ: "verse", t: "„Jedni drugich brzemiona noście, a tak wypełnicie prawo Chrystusowe.” (Ga 6,2)" },
+          { typ: "p", t: "Pomyśl dziś o tym przy każdym postoju. O kim mógłbyś pomyśleć wcześniej niż o sobie? Komu mógłbyś ponieść plecak ostatni kilometr przed Ciechanowcem? Nie chodzi o wielkie gesty. Chodzi o krok — twój krok — który raz na jakiś czas przestaje być tylko twój." },
+          { typ: "p", t: "Trzeci dzień mija. Jutro będzie czwarty i znów będzie łatwiej. Ale to dziś nauczysz się czegoś, co zostanie z tobą dłużej niż odciski: że najpiękniej idzie się w rytmie, którego się nie wybrało." },
+        ],
+      },
+      {
+        nr: 2, dzien: 2, dzienLbl: "Dzień 2", dataLbl: "12 maja", dur: 572, stan: "odsluchane",
+        tytul: "Pierwszy krok należy do Boga", autor: "ks. Andrzej Lemann", funkcja: "ojciec duchowny",
+        akapity: [
+          { typ: "lead", t: "Drugi dzień jest dniem prawdy. Zachwyt pierwszego poranka już opadł, a do celu wciąż daleko. Zostaje samo postanowienie: idę dalej." },
+          { typ: "p", t: "Często myślimy, że to my wybraliśmy tę drogę. Ale spróbuj przypomnieć sobie moment, w którym zapadła decyzja. Zwykle nie było w nim wyłącznie twojej woli — był też ktoś, kto zaprosił, jakieś słowo, które nie dawało spokoju." },
+          { typ: "verse", t: "„Nie wyście Mnie wybrali, ale Ja was wybrałem.” (J 15,16)" },
+          { typ: "p", t: "Dlatego dzisiejszy trud nie jest tylko twoim wysiłkiem. Pierwszy krok należał do Tego, który cię tu przyprowadził. Twoim zadaniem jest tylko nie zawrócić." },
+        ],
+      },
+      {
+        nr: 1, dzien: 1, dzienLbl: "Dzień 1", dataLbl: "11 maja", dur: 435, stan: "odsluchane",
+        tytul: "Po co komu pielgrzymka", autor: "ks. Tomasz Wadowski", funkcja: "przewodnik pielgrzymki",
+        akapity: [
+          { typ: "lead", t: "Można pojechać autobusem i być na Jasnej Górze za pół dnia. Skoro chodzi o cel, po co iść dwa tygodnie pieszo? Bo na pielgrzymce celem nie jest tylko miejsce." },
+          { typ: "p", t: "Idziemy, żeby coś zostawić po drodze. Pośpiech, hałas, przekonanie, że wszystko zależy od nas. Każdy kilometr odejmuje po trochu z tego bagażu, którego nie widać." },
+          { typ: "p", t: "Nie martw się dziś o czternasty dzień. Martw się o najbliższy postój. Pielgrzymka uczy mierzyć życie krótkimi odcinkami — od cienia do cienia, od studni do studni." },
+          { typ: "resp", t: "W: Któryś za nas cierpiał rany. O: Jezu Chryste, zmiłuj się nad nami." },
+        ],
+      },
+      {
+        nr: 4, dzien: 4, dzienLbl: "Dzień 4", dataLbl: "14 maja", dur: 0, stan: "wkrotce",
+        tytul: "Cisza, której się boimy", autor: "s. Weronika", funkcja: "rekolekcje w drodze",
+        akapity: [],
+      },
+    ];
+    this.pielgrzymka = (window.PG && window.PG.meta && window.PG.meta.nazwa) || "XLIII Piesza Pielgrzymka";
+  }
+
+  componentDidMount() {
+    this._iv = setInterval(() => {
+      if (!this.state.playing) return;
+      const cur = this.current();
+      if (!cur) return;
+      let nt = this.state.t + this.state.rate * 0.2;
+      let playing = true;
+      if (nt >= cur.dur) { nt = cur.dur; playing = false; }
+      this.setState({ t: nt, playing });
+      this.save(cur.nr, nt);
+    }, 200);
+  }
+  componentWillUnmount() {
+    clearInterval(this._iv);
+    if (this.state.curNr != null) this.save(this.state.curNr, this.state.t);
+  }
+
+  variant() { return this.props.variant === "b" ? "b" : "a"; }
+  key(nr) { return "pg.konf." + this.variant() + "." + nr; }
+  load(nr) { try { const v = localStorage.getItem(this.key(nr)); return v == null ? 0 : Math.max(0, +v || 0); } catch (e) { return 0; } }
+  save(nr, pos) { try { localStorage.setItem(this.key(nr), String(Math.floor(pos))); } catch (e) {} }
+  current() { return this.DATA.find(c => c.nr === this.state.curNr) || null; }
+
+  fmt(sec) {
+    sec = Math.max(0, Math.round(sec));
+    const m = Math.floor(sec / 60), s = sec % 60;
+    return m + ":" + (s < 10 ? "0" + s : s);
+  }
+
+  open(nr) {
+    const c = this.DATA.find(x => x.nr === nr);
+    if (!c || c.stan === "wkrotce") return;
+    let pos = this.load(nr);
+    if (c.stan === "teraz" && pos === 0) pos = Math.round(c.dur * 0.27);
+    if (c.stan === "odsluchane" && pos >= c.dur) pos = 0;
+    this.setState({ screen: "detal", curNr: nr, t: pos, playing: false, scrolled: false });
+  }
+  back() {
+    if (this.state.curNr != null) this.save(this.state.curNr, this.state.t);
+    this.setState({ screen: "lista", playing: false });
+  }
+  toggle() { this.setState(s => ({ playing: !s.playing })); }
+  restart() { const c = this.current(); this.setState({ t: 0 }); if (c) this.save(c.nr, 0); }
+  skip(d) { const c = this.current(); if (!c) return; const nt = Math.max(0, Math.min(c.dur, this.state.t + d)); this.setState({ t: nt }); this.save(c.nr, nt); }
+  cycleSpeed() {
+    const i = this.SPEEDS.indexOf(this.state.rate);
+    this.setState({ rate: this.SPEEDS[(i + 1) % this.SPEEDS.length] });
+  }
+  onScroll(e) { const v = e.target.scrollTop > 180; if (v !== this.state.scrolled) this.setState({ scrolled: v }); }
+
+  seekX(clientX) {
+    const el = this.trackRef.current; if (!el) return;
+    const r = el.getBoundingClientRect();
+    let p = (clientX - r.left) / r.width;
+    p = Math.max(0, Math.min(1, p));
+    const c = this.current(); if (!c) return;
+    const nt = p * c.dur;
+    this.setState({ t: nt });
+    this.save(c.nr, nt);
+  }
+  onTrackDown(e) { this._drag = true; try { e.currentTarget.setPointerCapture(e.pointerId); } catch (er) {} this.seekX(e.clientX); }
+  onTrackMove(e) { if (this._drag) this.seekX(e.clientX); }
+  onTrackUp() { this._drag = false; }
+
+  proseMap(akapity) {
+    const head = { fontFamily: "var(--font-head)", fontWeight: 700, fontSize: "calc(20px * var(--read-scale))", color: "var(--ink)", margin: "1.5em 0 .4em", letterSpacing: "-0.01em", lineHeight: 1.2 };
+    return (akapity || []).map(a => {
+      if (a.typ === "lead") return { cls: "lead", style: undefined, t: a.t };
+      if (a.typ === "drop") return { cls: "dropcap", style: undefined, t: a.t };
+      if (a.typ === "verse") return { cls: "verse", style: undefined, t: a.t };
+      if (a.typ === "resp") return { cls: "resp", style: undefined, t: a.t };
+      if (a.typ === "h3") return { cls: "", style: head, t: a.t };
+      return { cls: "", style: undefined, t: a.t };
+    });
+  }
+
+  inicjaly(name) {
+    return (name || "").split(" ").filter(w => /^[A-ZŻŹĆŁ]/.test(w)).map(w => w[0]).slice(0, 2).join("");
+  }
+
+  renderVals() {
+    const variant = this.variant();
+    const isLista = this.state.screen === "lista";
+    const cur = this.current();
+    const isDetal = this.state.screen === "detal" && cur;
+    const dur = cur ? cur.dur : 1;
+    const pct = cur ? Math.max(0, Math.min(1, this.state.t / dur)) : 0;
+
+    // lista
+    const lista = this.DATA.map(c => {
+      const saved = this.load(c.nr);
+      const inProg = c.stan === "teraz";
+      const seedPos = inProg && saved === 0 ? Math.round(c.dur * 0.27) : saved;
+      const bp = c.dur ? Math.max(0, Math.min(1, seedPos / c.dur)) : 0;
+      const disabled = c.stan === "wkrotce";
+      const done = c.stan === "odsluchane";
+      const coverGrad = inProg
+        ? "linear-gradient(155deg, var(--wine), var(--wine-700))"
+        : (disabled ? "linear-gradient(155deg, #C9C9D2, #B6B6C0)" : "linear-gradient(155deg, var(--wine-300), var(--wine))");
+      return {
+        nr: c.nr, dzienLbl: c.dzienLbl, dataLbl: c.dataLbl, tytul: c.tytul, autor: c.autor,
+        coverNum: c.dzien, durLbl: disabled ? "—" : this.fmt(c.dur),
+        disabled, open: () => this.open(c.nr),
+        cardStyle: {
+          display: "flex", gap: "var(--s4)", width: "100%", padding: "var(--s4)",
+          background: "var(--surface)", border: "1px solid var(--line-2)", borderRadius: "var(--r-card)",
+          boxShadow: "var(--sh-card)", opacity: disabled ? 0.62 : 1, cursor: disabled ? "default" : "pointer",
+          transition: "transform .14s, box-shadow .18s",
+        },
+        coverStyle: {
+          width: "62px", height: "62px", flex: "none", borderRadius: "16px", background: coverGrad,
+          color: "#fff", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
+          boxShadow: "var(--sh-sm)",
+        },
+        durStyle: { marginLeft: "auto", display: "inline-flex", alignItems: "center", gap: "4px", fontFamily: "var(--font-head)", fontWeight: 700, fontSize: "11.5px", color: "var(--muted)" },
+        stanRowStyle: { display: "flex", alignItems: "center", gap: "8px", marginTop: "10px" },
+        showBar: inProg,
+        barFillStyle: { display: "block", height: "100%", width: (bp * 100) + "%", background: "linear-gradient(90deg, var(--wine-700), var(--wine))", borderRadius: "999px" },
+        stanLblStyle: {
+          display: "inline-flex", alignItems: "center", gap: "5px", fontFamily: "var(--font-head)", fontWeight: 700,
+          fontSize: "11.5px", letterSpacing: ".02em", whiteSpace: "nowrap",
+          color: inProg ? "var(--wine)" : (done ? "var(--green)" : "var(--muted)"),
+          marginLeft: inProg ? 0 : "auto",
+        },
+        stanIconStyle: { display: done ? "inline-flex" : "none", color: "var(--green)" },
+        stanLbl: inProg ? ("Wznów · " + this.fmt(seedPos)) : (done ? "Odsłuchane" : "Dostępna 14 maja"),
+      };
+    });
+
+    // detal common
+    const speedLbl = this.SPEED_LBL[this.state.rate] || "1×";
+    const wave = this.wave.map((h, i) => {
+      const on = (this.wave.length > 1 ? i / (this.wave.length - 1) : 0) <= pct;
+      return { style: { width: "3px", borderRadius: "3px", flex: "none", height: (Math.round(h * 36) + 7) + "px", background: on ? "var(--wine)" : "var(--paper-sunk)", transition: "background .12s" } };
+    });
+
+    const scrolled = this.state.scrolled;
+    const floatBackStyle = {
+      position: "absolute", top: "16px", left: "14px", width: "40px", height: "40px", borderRadius: "50%",
+      background: "rgba(255,255,255,.18)", backdropFilter: "blur(6px)", WebkitBackdropFilter: "blur(6px)",
+      color: "#fff", display: "inline-flex", alignItems: "center", justifyContent: "center", zIndex: 20,
+      opacity: scrolled ? 0 : 1, pointerEvents: scrolled ? "none" : "auto", transition: "opacity .2s",
+    };
+    const miniBarStyle = {
+      position: "absolute", top: 0, left: 0, right: 0, zIndex: 25, display: "flex", alignItems: "center", gap: "10px",
+      padding: "10px var(--s4)", background: "color-mix(in oklab, var(--paper) 90%, transparent)",
+      backdropFilter: "blur(14px) saturate(1.2)", WebkitBackdropFilter: "blur(14px) saturate(1.2)",
+      borderBottom: "1px solid var(--line)",
+      transform: scrolled ? "none" : "translateY(-100%)", opacity: scrolled ? 1 : 0,
+      pointerEvents: scrolled ? "auto" : "none", transition: "transform .26s cubic-bezier(.22,1,.36,1), opacity .2s",
+    };
+    const miniFillStyle = { display: "block", height: "100%", width: (pct * 100) + "%", background: "var(--wine)", borderRadius: "999px" };
+    const dockFillStyle = { position: "absolute", left: 0, top: 0, bottom: 0, width: (pct * 100) + "%", background: "linear-gradient(90deg, var(--wine-700), var(--wine))", borderRadius: "999px" };
+    const dockThumbStyle = { position: "absolute", top: "50%", left: (pct * 100) + "%", width: "13px", height: "13px", borderRadius: "50%", background: "#fff", border: "2px solid var(--wine)", boxShadow: "var(--sh-sm)", transform: "translate(-50%,-50%)" };
+
+    return {
+      variant, isLista, lista, pielgrzymka: this.pielgrzymka,
+      isA: isDetal && variant === "a",
+      isB: isDetal && variant === "b",
+      curTytul: cur ? cur.tytul : "",
+      curAutor: cur ? cur.autor : "",
+      curFunkcja: cur ? cur.funkcja : "",
+      curDzienLbl: cur ? cur.dzienLbl : "",
+      curInicjaly: cur ? this.inicjaly(cur.autor) : "",
+      proza: this.proseMap(cur ? cur.akapity : []),
+      playing: this.state.playing,
+      notPlaying: !this.state.playing,
+      elapsed: this.fmt(this.state.t),
+      total: cur ? this.fmt(cur.dur) : "0:00",
+      speedLbl, wave,
+      trackRef: this.trackRef,
+      floatBackStyle, miniBarStyle, miniFillStyle, dockFillStyle, dockThumbStyle,
+      open: (nr) => this.open(nr),
+      back: () => this.back(),
+      toggle: () => this.toggle(),
+      restart: () => this.restart(),
+      back10: () => this.skip(-10),
+      fwd10: () => this.skip(10),
+      cycleSpeed: () => this.cycleSpeed(),
+      onScroll: (e) => this.onScroll(e),
+      onTrackDown: (e) => this.onTrackDown(e),
+      onTrackMove: (e) => this.onTrackMove(e),
+      onTrackUp: () => this.onTrackUp(),
+    };
+  }
+}
+</script>
+</body>
+</html>

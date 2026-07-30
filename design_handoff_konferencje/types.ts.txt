@@ -1,0 +1,29 @@
+// =============================================================================
+// types.ts — kontrakt danych modułu Konferencje.
+// Skopiuj do src/data/types.ts (dopisz do istniejących typów).
+// =============================================================================
+
+// Typy akapitów transkrypcji — identyczne jak w pozostałych treściach,
+// więc renderuje je istniejący komponent <Prose>.
+export type AkapitTyp = 'lead' | 'p' | 'h3' | 'verse' | 'resp' | 'drop';
+export type Akapit = { typ: AkapitTyp; t: string };
+
+// Stan odsłuchania na liście:
+//  - 'teraz'      — konferencja dnia (pokazuje pasek "Wznów · m:ss")
+//  - 'odsluchane' — przesłuchana do końca (znacznik ✓ Odsłuchane)
+//  - 'wkrotce'    — jeszcze niedostępna (kafel wyszarzony, nieklikalny)
+export type StanKonferencji = 'teraz' | 'odsluchane' | 'wkrotce';
+
+export type Konferencja = {
+  nr: number;            // identyfikator (== numer dnia w makiecie)
+  dzien: number;         // numer dnia pielgrzymki (na okładce)
+  dataLbl: string;       // np. "13 maja"
+  tytul: string;
+  autor: string;         // np. "ks. Tomasz Wadowski"
+  funkcja: string;       // np. "przewodnik pielgrzymki"
+  mp3Url: string;        // ŹRÓDŁO NAGRANIA — domyślnie plik .mp3
+  dlugosc: number;       // długość w sekundach (z metadanych pliku lub z API)
+  stan: StanKonferencji;
+  akapity: Akapit[];     // transkrypcja (z SRT lub TXT — patrz srt-txt.ts)
+  peaks?: number[];      // opcjonalnie: amplitudy 0..1 do waveform (jeśli API liczy)
+};

@@ -8,6 +8,7 @@ import { fmt } from '../../lib/format';
 import { Icon } from '../../lib/icons';
 import { Pill, Progress, SectionHead, Button, Eyebrow, Loader } from '../../components';
 import { TimelineItem } from './TimelineItem';
+import { usePlanWeather } from '../../lib/usePlanWeather';
 
 export function TrasaScreen() {
   const { state, settings } = usePilgrimage();
@@ -24,6 +25,7 @@ function TrasaLoaded({ pilgrimage, activeDay, tryb }: { pilgrimage: ApiPilgrimag
   const dzien = toDzien(day);
   const pos = usePozycja(dzien, tryb);
   const kmCum = buildKmCumulative(day.stops);
+  const weather = usePlanWeather(day.stops);
 
   function stopState(stopKm: number): 'done' | 'now' | 'next' {
     if (idx !== activeIdx) return 'next';
@@ -97,6 +99,7 @@ function TrasaLoaded({ pilgrimage, activeDay, tryb }: { pilgrimage: ApiPilgrimag
                       stop={stop}
                       state={stopState(kmCum[i])}
                       distToNext={stop.distanceToNextKm > 0 ? stop.distanceToNextKm : undefined}
+                      weather={weather[stop.id]}
                     />
                   ))}
                 </div>

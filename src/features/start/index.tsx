@@ -10,7 +10,6 @@ import type { ApiPilgrimage, ApiPilgrimageDay } from "../../data/types";
 import { fmt } from "../../lib/format";
 import { Icon } from "../../lib/icons";
 import { Pill, Progress, Eyebrow, Row, Loader } from "../../components";
-import { WeatherWidget } from "./WeatherWidget";
 import { StatusWidget } from "./StatusWidget";
 import { KonferencjaRow } from "./KonferencjaRow";
 
@@ -268,13 +267,9 @@ function StartLoaded({
               </div>
             </div>
 
-            <div className="only-mobile mt4">
-              <WeatherWidget day={day} />
-            </div>
           </div>
 
           <aside className="rail hide-mobile">
-            <WeatherWidget day={day} />
             <StatusWidget zrodlo={pos.zrodlo} />
           </aside>
         </div>

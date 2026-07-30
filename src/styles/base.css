@@ -359,9 +359,22 @@ a { color: inherit; text-decoration: none; }
   transition: box-shadow .18s, border-color .15s;
 }
 .tl__item.is-now .tl__stop { border-color: var(--wine-300); box-shadow: var(--sh-soft); }
+.tl__head { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--s3); }
 .tl__time { font-family: var(--font-head); font-weight: 700; font-size: 15px; color: var(--wine); display: flex; align-items: center; gap: 8px; }
+.tl__meta { display: flex; align-items: flex-end; flex-direction: column; }
+.tl__badges { display: flex; justify-content: flex-end; flex-wrap: wrap; gap: 6px; }
+.tl__badges .tl__badge { margin-left: 0; }
 .tl__badge { margin-left: auto; }
 .tl__place { font-family: var(--font-head); font-weight: 700; font-size: 17px; color: var(--ink); margin-top: 4px; letter-spacing: -0.01em; }
+.tl__weather-row { display: flex; align-items: center; justify-content: space-between; gap: var(--s3); margin-top: 10px; }
+.tl__weather-row .tl__place { min-width: 0; margin-top: 0; }
+.tl__forecast {
+  display: inline-flex; align-items: center; gap: 8px; flex: none; width: fit-content; margin-top: 0;
+  padding: 8px 13px; border-radius: var(--r-pill); background: var(--surface-soft);
+  border: 1px solid var(--line-2); color: var(--ink-2); font-size: 13px; line-height: 1.2;
+}
+.tl__forecast .ic { color: var(--amber); font-size: 18px; }
+.tl__forecast b { color: var(--ink); font-family: var(--font-head); font-size: 17px; letter-spacing: -0.02em; }
 .tl__desc { font-size: 14px; color: var(--ink-2); margin-top: 2px; }
 .tl__seg {
   display: inline-flex; align-items: center; gap: 7px;
@@ -456,7 +469,7 @@ a { color: inherit; text-decoration: none; }
 .weather__ic { font-size: 38px; color: var(--amber); }
 .weather__temp { font-family: var(--font-head); font-weight: 800; font-size: 30px; color: var(--ink); letter-spacing: -0.02em; }
 .weather__desc { font-size: 13px; color: var(--muted); }
-.weather__row { display: flex; gap: var(--s5); margin-top: var(--s3); padding-top: var(--s3); border-top: 1px solid var(--line-2); }
+.weather__row { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--s3) var(--s4); margin-top: var(--s3); padding-top: var(--s3); border-top: 1px solid var(--line-2); }
 .weather__cell { font-size: 13px; color: var(--ink-2); display: flex; flex-direction: column; gap: 1px; }
 .weather__cell b { font-family: var(--font-head); font-size: 15px; color: var(--ink); }
 

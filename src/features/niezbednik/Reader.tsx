@@ -102,6 +102,66 @@ function CzytaniaReader({ onBack }: { onBack: () => void }) {
 type Song = { title: string; lines: { text: string; chords: string[] }[] };
 const SONGBOOK_URL = `${import.meta.env.BASE_URL}spiewnik_pielgrzymkowy.json`;
 
+const GODZINKI_HEADINGS = new Set([
+  'Na Jutrznię', 'Na Prymę', 'Na Tercję', 'Na Sekstę', 'Na Nonę',
+  'Na Nieszpory', 'Kompleta', 'Hymn', 'Ofiarowanie Godzinek',
+  'Antyfona', 'Módlmy się:',
+]);
+
+function godzinkiToAkapity(lines: Song['lines']): Akapit[] {
+  return lines.map(({ text }) => ({
+    typ: GODZINKI_HEADINGS.has(text)
+      ? 'h3'
+      : /^(P\.|W\.)/.test(text)
+        ? 'resp'
+        : 'p',
+    t: text,
+  }));
+}
+
+function ModlitewnikReader({ onBack }: { onBack: () => void }) {
+  const { data: godzinki, isLoading, error } = useQuery({
+    queryKey: ['godzinki-niepokalane-poczecie'],
+    queryFn: async () => {
+      const response = await fetch(SONGBOOK_URL, { cache: 'force-cache' });
+      if (!response.ok) throw new Error(`Songbook ${response.status}`);
+      const data = await response.json() as { songs: Song[] };
+      const song = data.songs.find(({ lines }) =>
+        lines.some(({ text }) => text === 'Ofiarowanie Godzinek'),
+      );
+      if (!song) throw new Error('Godzinki not found');
+      return song;
+    },
+    staleTime: Infinity,
+    gcTime: Infinity,
+    retry: false,
+  });
+
+  if (isLoading) return (
+    <Reader title="Modlitewnik" onBack={onBack} kickerIcon="book-heart" kickerTone="green"
+      kickerLabel="Modlitwa maryjna" headline="Godzinki o Niepokalanym Poczęciu NMP"
+      akapity={[]} loading />
+  );
+
+  if (error || !godzinki) return (
+    <Reader title="Modlitewnik" onBack={onBack} kickerIcon="book-heart" kickerTone="green"
+      kickerLabel="Modlitwa maryjna" headline="Godzinki o Niepokalanym Poczęciu NMP"
+      akapity={[{ typ: 'p', t: 'Godzinki nie są jeszcze dostępne offline. Otwórz modlitewnik raz przy połączeniu z internetem, aby zapisać je w pamięci aplikacji.' }]} />
+  );
+
+  return (
+    <Reader
+      title="Modlitewnik"
+      onBack={onBack}
+      kickerIcon="book-heart"
+      kickerTone="green"
+      kickerLabel="Modlitwa maryjna"
+      headline="Godzinki o Niepokalanym Poczęciu NMP"
+      akapity={godzinkiToAkapity(godzinki.lines)}
+    />
+  );
+}
+
 function SongDetail({ song, onBack }: { song: Song; onBack: () => void }) {
   return (
     <div className="viewport scroll">
@@ -246,6 +306,7 @@ export function NiezbednikReader() {
   if (modul === 'brewiarz') return <BrewiarzReader onBack={onBack} />;
   if (modul === 'czytania') return <CzytaniaReader onBack={onBack} />;
   if (modul === 'spiewnik') return <SpiewnikReader onBack={onBack} />;
+  if (modul === 'modlitewnik') return <ModlitewnikReader onBack={onBack} />;
 
   const m = CONTENT_MAP[modul ?? ''] ?? CONTENT_MAP.modlitewnik;
   return (

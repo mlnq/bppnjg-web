@@ -428,6 +428,7 @@ a { color: inherit; text-decoration: none; }
 }
 .prose strong { color: var(--ink); font-weight: 700; }
 .prose .resp { color: var(--wine); font-weight: 700; }
+.prose .resp.resp--answer { color: var(--green); }
 .prose p.source { font-size: calc(12px * var(--read-scale)); font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin: 0 0 .35em; }
 
 .konf-transcript { display: grid; gap: 4px; }

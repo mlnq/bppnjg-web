@@ -34,6 +34,20 @@ describe('pozycjaZHarmonogramu', () => {
     const now = new Date(); now.setHours(12, 0, 0, 0);
     expect(pozycjaZHarmonogramu(dzien, now)).toBe(15);
   });
+
+  it('keeps the position at a stop for its planned break', () => {
+    const withBreak: Dzien = {
+      ...dzien,
+      przystanki: [
+        { czas: '06:00', km: 0, miejsce: 'A' },
+        { czas: '11:30', km: 15, miejsce: 'Topczewo', durationMin: 90 },
+        { czas: '14:30', km: 30, miejsce: 'B' },
+      ],
+    };
+    const now = new Date(); now.setHours(12, 43, 0, 0);
+
+    expect(pozycjaZHarmonogramu(withBreak, now)).toBe(15);
+  });
 });
 
 const dzienGps: Dzien = {

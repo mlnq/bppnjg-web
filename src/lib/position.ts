@@ -2,6 +2,8 @@ export type Przystanek = {
   czas: string;          // "09:30"
   km: number;            // skumulowany dystans od startu etapu
   miejsce: string;
+  /** Planned stop duration. While it lasts, the schedule position stays here. */
+  durationMin?: number | null;
   lat?: number;
   lng?: number;
 };
@@ -21,14 +23,22 @@ const toMin = (s: string) => +s.slice(0, 2) * 60 + +s.slice(3, 5);
 // ——— Źródło "harmonogram": interpolacja dystansu po czasie zegarowym ———
 export function pozycjaZHarmonogramu(dzien: Dzien, now = new Date()): number {
   const mins = now.getHours() * 60 + now.getMinutes();
-  const pts = dzien.przystanki.map((p) => ({ m: toMin(p.czas), km: p.km }));
+  const pts = dzien.przystanki.map((p) => ({
+    m: toMin(p.czas),
+    km: p.km,
+    durationMin: p.durationMin ?? 0,
+  }));
   if (pts.length === 0) return 0;
   if (mins <= pts[0].m) return 0;
   if (mins >= pts[pts.length - 1].m) return dzien.dystans;
   for (let i = 0; i < pts.length - 1; i++) {
     const a = pts[i], b = pts[i + 1];
-    if (mins >= a.m && mins <= b.m) {
-      const t = b.m === a.m ? 0 : (mins - a.m) / (b.m - a.m);
+    // The following waypoint time includes the break, so start interpolating
+    // the next segment only after the scheduled stop has ended.
+    const departure = Math.min(a.m + a.durationMin, b.m);
+    if (mins >= a.m && mins < departure) return a.km;
+    if (mins >= departure && mins <= b.m) {
+      const t = b.m === departure ? 0 : (mins - departure) / (b.m - departure);
       return a.km + t * (b.km - a.km);
     }
   }

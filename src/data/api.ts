@@ -117,6 +117,7 @@ export function toDzien(day: ApiPilgrimageDay): Dzien {
       czas: scheduledStopTime(s),
       km: kmCum[i],
       miejsce: s.townName ?? s.name ?? '',
+      durationMin: s.durationMin,
       lat: s.latitude ?? undefined,
       lng: s.longitude ?? undefined,
     })),

@@ -27,7 +27,7 @@ export function KonferencjaPlayer() {
     enabled: Boolean(conferenceId),
   });
 
-  const { ref, t, dur, pct, playing, rate, toggle, seek, skip, restart, stop, cycleSpeed } =
+  const { ref, t, dur, pct, playing, rate, toggle, seek, skip, restart, cycleSpeed } =
     useAudioKonferencja(dayNr, k?.mp3Url ?? '');
 
   const [scrolled, setScrolled] = useState(false);
@@ -120,9 +120,9 @@ export function KonferencjaPlayer() {
                 <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><path d="M12 5a8 8 0 1 1-7.6 5.6" /><path d="M4 4v5h5" /></svg>
                 <span className="konf-ctl__n">10</span>
               </button>
-              <button className="konf-play" onClick={playing ? stop : toggle} aria-label={playing ? 'Zatrzymaj' : 'Odtwórz'}>
+              <button className="konf-play" onClick={toggle} aria-label={playing ? 'Wstrzymaj' : 'Wznów'}>
                 {playing
-                  ? <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="12" height="12" rx="1.5" /></svg>
+                  ? <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="5" width="4" height="14" rx="1" /><rect x="14" y="5" width="4" height="14" rx="1" /></svg>
                   : <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor" style={{ marginLeft: 3 }}><path d="M8 5.2v13.6L19 12z" /></svg>}
               </button>
               <button className="konf-ctl" onClick={() => skip(10)} title="10 sekund naprzód">
@@ -168,9 +168,9 @@ export function KonferencjaPlayer() {
         <button className="hdr__btn left" style={{ width: 38, height: 38, flex: 'none' }} onClick={() => nav(-1)} aria-label="Wstecz">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6" /></svg>
         </button>
-        <button className="konf-mini__play" onClick={playing ? stop : toggle} aria-label={playing ? 'Zatrzymaj' : 'Odtwórz'}>
+        <button className="konf-mini__play" onClick={toggle} aria-label={playing ? 'Wstrzymaj' : 'Wznów'}>
           {playing
-            ? <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="12" height="12" rx="1.5" /></svg>
+            ? <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="5" width="4" height="14" rx="1" /><rect x="14" y="5" width="4" height="14" rx="1" /></svg>
             : <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" style={{ marginLeft: 2 }}><path d="M8 5.2v13.6L19 12z" /></svg>}
         </button>
         <span style={{ flex: 1, minWidth: 0 }}>

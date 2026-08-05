@@ -11,3 +11,4 @@ export { Prose } from './Prose';
 export { Reader } from './Reader';
 export { Loader } from './Loader';
 export { ScreenTools } from './ScreenTools';
+export { DailyDistanceHero } from './DailyDistanceHero';

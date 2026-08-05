@@ -13,6 +13,7 @@ export type ZrodloPozycji = 'gps' | 'plan';
 export type StanPozycji = {
   km: number;            // dystans przebyty na etapie
   doCelu: number;        // dystans pozostały
+  doNastepnego: number;  // dystans do kolejnego przystanku
   pct: number;           // 0..100
   zrodlo: ZrodloPozycji; // co faktycznie liczy pozycję teraz
 };
@@ -62,9 +63,13 @@ export function usePozycja(dzien: Dzien, tryb: TrybPozycji = 'auto'): StanPozycj
   const zrodlo: ZrodloPozycji = kmGps != null ? 'gps' : 'plan';
 
   const clamped = Math.max(0, Math.min(dzien.dystans, km));
+  // Po osiągnięciu przystanku wybieramy już kolejny odcinek. Dzięki temu
+  // podczas postoju wyświetlamy pełną długość trasy do następnego punktu.
+  const nextStop = dzien.przystanki.find((stop) => stop.km > clamped + 1e-6);
   return {
     km: clamped,
     doCelu: dzien.dystans - clamped,
+    doNastepnego: nextStop ? nextStop.km - clamped : 0,
     pct: dzien.dystans > 0 ? Math.round((clamped / dzien.dystans) * 100) : 0,
     zrodlo,
   };

@@ -9,7 +9,7 @@ import { usePozycja } from "../../lib/usePozycja";
 import type { ApiPilgrimage, ApiPilgrimageDay } from "../../data/types";
 import { fmt } from "../../lib/format";
 import { Icon } from "../../lib/icons";
-import { Pill, Progress, Eyebrow, Row, Loader } from "../../components";
+import { Pill, Progress, Eyebrow, Row, Loader, DailyDistanceHero } from "../../components";
 import { StatusWidget } from "./StatusWidget";
 import { KonferencjaRow } from "./KonferencjaRow";
 
@@ -199,6 +199,7 @@ function StartLoaded({
   const dzien = toDzien(day);
   const pos = usePozycja(dzien, tryb);
   const gpsActive = pos.zrodlo === "gps";
+  const etapZakonczony = pos.doCelu < 0.005;
 
   return (
     <div className="viewport scroll">
@@ -221,13 +222,7 @@ function StartLoaded({
                   <Icon name="navigation" />
                 </button>
               </div>
-              <div className="dial__num" style={{ marginTop: "var(--s3)" }}>
-                {fmt(pos.doCelu)}
-                <small>km</small>
-              </div>
-              <Eyebrow wine style={{ marginTop: 2 }}>
-                do celu dnia
-              </Eyebrow>
+              <DailyDistanceHero distance={dzien.dystans} />
               <div className="dial__route" style={{ marginTop: "var(--s4)" }}>
                 {dzien.od}
                 <span className="arrow">→</span>
@@ -236,8 +231,18 @@ function StartLoaded({
               <div style={{ marginTop: "var(--s4)" }}>
                 <Progress
                   pct={pos.pct}
-                  leftLabel={gpsActive ? fmt(pos.km) + " km przebyto" : "Planowany postęp: " + pos.pct + "%"}
-                  rightLabel={gpsActive ? fmt(pos.doCelu) + " km do celu" : "Szacowany etap: " + fmt(pos.doCelu) + " km do celu"}
+                  leftLabel={
+                    gpsActive
+                      ? fmt(pos.km) + " km przebyto"
+                      : "Postęp: " + pos.pct + "%"
+                  }
+                  rightLabel={
+                    etapZakonczony
+                      ? "Etap zakończony - odpoczynek"
+                      : "Do końca dzisiejszego etapu: " +
+                        fmt(pos.doCelu) +
+                        " km"
+                  }
                 />
               </div>
               {pos.zrodlo === "plan" && (
@@ -267,7 +272,6 @@ function StartLoaded({
                 <KonferencjaRow dayNumber={day.dayNumber} />
               </div>
             </div>
-
           </div>
 
           <aside className="rail hide-mobile">

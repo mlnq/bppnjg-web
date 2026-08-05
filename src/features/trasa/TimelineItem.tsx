@@ -3,7 +3,11 @@ import { fmt } from "../../lib/format";
 import { scheduledStopTime } from "../../data/api";
 import type { ApiStop } from "../../data/types";
 import type { StopWeather } from "../../lib/usePlanWeather";
-import { weatherIconName, weatherLabel, weatherTone } from "../../lib/weatherPresentation";
+import {
+  weatherIconName,
+  weatherLabel,
+  weatherTone,
+} from "../../lib/weatherPresentation";
 
 const STOP_ICON: Record<string, string> = {
   start: "flag",
@@ -20,6 +24,9 @@ function badgeIcon(badge?: string | null): string {
 type ItemProps = {
   stop: ApiStop;
   state: "done" | "now" | "next";
+  resting?: boolean;
+  plannedDepartureTime?: string;
+  traveling?: boolean;
   distToNext?: number;
   weather?: StopWeather;
 };
@@ -27,10 +34,18 @@ type ItemProps = {
 export function TimelineItem({
   stop,
   state: s,
+  resting = false,
+  plannedDepartureTime,
+  traveling = false,
   distToNext,
   weather,
 }: ItemProps) {
-  const cls = s === "now" ? "is-now" : s === "done" ? "is-done" : "";
+  const cls = [
+    s === "now" ? "is-now" : s === "done" ? "is-done" : "",
+    resting ? "is-resting" : "",
+  ]
+    .filter(Boolean)
+    .join(" ");
   const icon = STOP_ICON[stop.type] ?? badgeIcon(stop.badge);
   return (
     <div className={"tl__item " + cls}>
@@ -44,7 +59,7 @@ export function TimelineItem({
             {scheduledStopTime(stop)}
           </div>
           <div className="tl__meta">
-            {(stop.durationMin || s === "now") && (
+            {(stop.durationMin || resting) && (
               <div className="tl__badges">
                 {stop.durationMin ? (
                   <span className="badge tl__badge">
@@ -52,7 +67,9 @@ export function TimelineItem({
                     {stop.durationMin} min
                   </span>
                 ) : null}
-                {s === "now" && <span className="badge badge--now tl__badge">Teraz</span>}
+                {resting && (
+                  <span className="badge badge--now tl__badge">Aktualnie</span>
+                )}
               </div>
             )}
           </div>
@@ -65,16 +82,25 @@ export function TimelineItem({
               aria-label={`Pogoda o ${scheduledStopTime(stop)} w ${stop.townName ?? stop.name}: ${weatherLabel(weather.icon)}`}
             >
               <Icon name={weatherIconName(weather.icon)} />
-              <span><b>{weather.temperatureC}°</b></span>
+              <span>
+                <b>{weather.temperatureC}°</b>
+              </span>
             </div>
           )}
         </div>
         {stop.description && <div className="tl__desc">{stop.description}</div>}
       </div>
       {distToNext != null && distToNext > 0 && (
-        <div className="tl__seg">
+        <div
+          className={`tl__seg${traveling && !resting ? " is-traveling" : ""}`}
+        >
           <Icon name="footprints" />
           {fmt(distToNext)} km
+          {traveling && !resting && (
+            <span className="tl__traveler">
+              <Icon name="user" />W trasie
+            </span>
+          )}
         </div>
       )}
     </div>

@@ -1,38 +1,135 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { usePilgrimage } from '../../app/PilgrimageContext';
-import { toDzien, buildKmCumulative } from '../../data/api';
-import { usePozycja } from '../../lib/usePozycja';
-import type { ApiPilgrimage, ApiPilgrimageDay } from '../../data/types';
-import { fmt } from '../../lib/format';
-import { Icon } from '../../lib/icons';
-import { Pill, Progress, SectionHead, Button, Eyebrow, Loader } from '../../components';
-import { TimelineItem } from './TimelineItem';
-import { usePlanWeather } from '../../lib/usePlanWeather';
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { usePilgrimage } from "../../app/PilgrimageContext";
+import { toDzien, buildKmCumulative, scheduledStopTime } from "../../data/api";
+import { usePozycja } from "../../lib/usePozycja";
+import type { ApiPilgrimage, ApiPilgrimageDay } from "../../data/types";
+import { fmt } from "../../lib/format";
+import { Icon } from "../../lib/icons";
+import {
+  Pill,
+  Progress,
+  SectionHead,
+  Button,
+  Eyebrow,
+  Loader,
+  DailyDistanceHero,
+} from "../../components";
+import { TimelineItem } from "./TimelineItem";
+import { usePlanWeather } from "../../lib/usePlanWeather";
+
+function timeToMinutes(time: string): number | null {
+  const match = /^(\d{1,2}):(\d{2})$/.exec(time);
+  if (!match) return null;
+  const hours = Number(match[1]);
+  const minutes = Number(match[2]);
+  return hours < 24 && minutes < 60 ? hours * 60 + minutes : null;
+}
+
+function plannedRestDuration(stop: ApiPilgrimageDay["stops"][number]): number {
+  return Math.max(stop.durationMin ?? 0, 0);
+}
+
+function isTravelingBetweenStops(
+  stops: ApiPilgrimageDay["stops"],
+  index: number,
+  now = new Date(),
+): boolean {
+  const stop = stops[index];
+  const nextStop = stops[index + 1];
+  if (!stop || !nextStop) return false;
+
+  const start = timeToMinutes(scheduledStopTime(stop));
+  const next = timeToMinutes(scheduledStopTime(nextStop));
+  if (start === null || next === null) return false;
+
+  const departure = Math.min(start + plannedRestDuration(stop), next);
+  const current = now.getHours() * 60 + now.getMinutes();
+  return current >= departure && current < next;
+}
+
+function isRestingAtStop(
+  stops: ApiPilgrimageDay["stops"],
+  index: number,
+  now = new Date(),
+): boolean {
+  const stop = stops[index];
+  const nextStop = stops[index + 1];
+  if (!stop || !nextStop) return false;
+
+  const start = timeToMinutes(scheduledStopTime(stop));
+  const next = timeToMinutes(scheduledStopTime(nextStop));
+  if (start === null || next === null) return false;
+
+  const current = now.getHours() * 60 + now.getMinutes();
+  const duration = plannedRestDuration(stop);
+  return duration > 0 && current >= start && current < Math.min(start + duration, next);
+}
+
+function plannedDepartureTime(
+  stops: ApiPilgrimageDay["stops"],
+  index: number,
+): string | undefined {
+  const stop = stops[index];
+  const nextStop = stops[index + 1];
+  if (!stop || !nextStop) return undefined;
+
+  const start = timeToMinutes(scheduledStopTime(stop));
+  const next = timeToMinutes(scheduledStopTime(nextStop));
+  if (start === null || next === null) return undefined;
+
+  const end = Math.min(start + plannedRestDuration(stop), next);
+  return `${String(Math.floor(end / 60) % 24).padStart(2, "0")}:${String(end % 60).padStart(2, "0")}`;
+}
 
 export function TrasaScreen() {
   const { state, settings } = usePilgrimage();
-  if (state.status === 'loading') return <Loader fullscreen />;
-  if (state.status !== 'ok') return <p className="muted" style={{ padding: 32 }}>{state.message}</p>;
-  return <TrasaLoaded pilgrimage={state.pilgrimage} activeDay={state.day} tryb={settings.tryb} />;
+  if (state.status === "loading") return <Loader fullscreen />;
+  if (state.status !== "ok")
+    return (
+      <p className="muted" style={{ padding: 32 }}>
+        {state.message}
+      </p>
+    );
+  return (
+    <TrasaLoaded
+      pilgrimage={state.pilgrimage}
+      activeDay={state.day}
+      tryb={settings.tryb}
+    />
+  );
 }
 
-function TrasaLoaded({ pilgrimage, activeDay, tryb }: { pilgrimage: ApiPilgrimage; activeDay: ApiPilgrimageDay; tryb: 'auto' | 'gps' | 'plan' }) {
+function TrasaLoaded({
+  pilgrimage,
+  activeDay,
+  tryb,
+}: {
+  pilgrimage: ApiPilgrimage;
+  activeDay: ApiPilgrimageDay;
+  tryb: "auto" | "gps" | "plan";
+}) {
   const navigate = useNavigate();
-  const activeIdx = pilgrimage.days.findIndex((d) => d.dayNumber === activeDay.dayNumber);
+  const activeIdx = pilgrimage.days.findIndex(
+    (d) => d.dayNumber === activeDay.dayNumber,
+  );
   const [idx, setIdx] = useState(activeIdx >= 0 ? activeIdx : 0);
   const day = pilgrimage.days[idx];
   const dzien = toDzien(day);
   const pos = usePozycja(dzien, tryb);
   const kmCum = buildKmCumulative(day.stops);
   const weather = usePlanWeather(day.stops);
-  const gpsActive = pos.zrodlo === 'gps';
+  const gpsActive = pos.zrodlo === "gps";
+  const etapZakonczony = pos.doCelu < 0.005;
 
-  function stopState(stopKm: number): 'done' | 'now' | 'next' {
-    if (idx !== activeIdx) return 'next';
-    if (stopKm <= pos.km - 0.5) return 'done';
-    if (stopKm <= pos.km + 2) return 'now';
-    return 'next';
+  function stopState(stopKm: number): "done" | "now" | "next" {
+    // All stops of already completed stages should retain their completed
+    // appearance when the user goes back to review an earlier day.
+    if (idx < activeIdx) return "done";
+    if (idx > activeIdx) return "next";
+    if (stopKm <= pos.km - 0.5) return "done";
+    if (stopKm <= pos.km + 2) return "now";
+    return "next";
   }
 
   const hasSchedule = day.stops.length > 1;
@@ -40,90 +137,164 @@ function TrasaLoaded({ pilgrimage, activeDay, tryb }: { pilgrimage: ApiPilgrimag
   return (
     <div className="viewport scroll">
       <div className="stage">
-          <div className="dayswitch enter enter-1">
-            <button className="iconbtn" disabled={idx === 0} style={{ opacity: idx === 0 ? 0.35 : 1 }}
-              onClick={() => setIdx((i) => Math.max(0, i - 1))} aria-label="Poprzedni dzień">
-              <Icon name="chevron-left" />
-            </button>
-            <div className="center">
-              <div className="dayswitch__label">Dzień {day.dayNumber} z {pilgrimage.totalDays}</div>
-              <div className="dayswitch__sub">{dzien.od} → {dzien.do}</div>
+        <div className="dayswitch enter enter-1">
+          <button
+            className="iconbtn"
+            disabled={idx === 0}
+            style={{ opacity: idx === 0 ? 0.35 : 1 }}
+            onClick={() => setIdx((i) => Math.max(0, i - 1))}
+            aria-label="Poprzedni dzień"
+          >
+            <Icon name="chevron-left" />
+          </button>
+          <div className="center">
+            <div className="dayswitch__label">
+              Dzień {day.dayNumber} z {pilgrimage.totalDays}
             </div>
-            <button className="iconbtn" disabled={idx === pilgrimage.days.length - 1}
-              style={{ opacity: idx === pilgrimage.days.length - 1 ? 0.35 : 1 }}
-              onClick={() => setIdx((i) => Math.min(pilgrimage.days.length - 1, i + 1))} aria-label="Następny dzień">
-              <Icon name="chevron-right" />
-            </button>
+            <div className="dayswitch__sub">
+              {dzien.od} → {dzien.do}
+            </div>
           </div>
+          <button
+            className="iconbtn"
+            disabled={idx === pilgrimage.days.length - 1}
+            style={{ opacity: idx === pilgrimage.days.length - 1 ? 0.35 : 1 }}
+            onClick={() =>
+              setIdx((i) => Math.min(pilgrimage.days.length - 1, i + 1))
+            }
+            aria-label="Następny dzień"
+          >
+            <Icon name="chevron-right" />
+          </button>
+        </div>
 
-          {hasSchedule ? (
-            <>
-              {pos.zrodlo === 'plan' && (
-                <div className="alert alert--info enter enter-2" style={{ marginTop: 'var(--s4)' }}>
-                  <Icon name="locate" className="alert__ic" />
-                  <span className="alert__txt">GPS wyłączony — pozycja według harmonogramu</span>
+        {hasSchedule ? (
+          <>
+            {pos.zrodlo === "plan" && (
+              <div
+                className="alert alert--info enter enter-2"
+                style={{ marginTop: "var(--s4)" }}
+              >
+                <Icon name="locate" className="alert__ic" />
+                <span className="alert__txt">
+                  GPS wyłączony — pozycja według harmonogramu
+                </span>
+              </div>
+            )}
+            <div
+              className="card enter enter-2"
+              style={{ padding: "var(--s5)", marginTop: "var(--s4)" }}
+            >
+              <div className="between">
+                <Pill variant="rose">
+                  Etap {day.dayNumber} z {pilgrimage.totalDays}
+                </Pill>
+              </div>
+              {idx === activeIdx ? (
+                <DailyDistanceHero distance={dzien.dystans} marginTop="var(--s4)" />
+              ) : (
+                <>
+                  <div
+                    className="dial__num"
+                    style={{ marginTop: "var(--s4)", color: "var(--ink-2)" }}
+                  >
+                    {fmt(kmCum[kmCum.length - 1] || day.route.totalDistanceKm)}
+                    <small style={{ color: "var(--muted)" }}>km</small>
+                  </div>
+                  <Eyebrow>długość etapu</Eyebrow>
+                </>
+              )}
+              <div className="dial__route mt3">
+                {dzien.od}
+                <span className="arrow">→</span>
+                {dzien.do}
+              </div>
+              {idx === activeIdx && (
+                <div className="mt4">
+                  <Progress
+                    pct={pos.pct}
+                    leftLabel={
+                      gpsActive
+                        ? fmt(pos.km) + " km przebyto"
+                        : "Postęp: " + pos.pct + "%"
+                    }
+                    rightLabel={
+                      etapZakonczony
+                        ? "Etap zakończony - odpoczynek"
+                        : "Do końca dzisiejszego etapu: " +
+                          fmt(pos.doCelu) +
+                          " km"
+                    }
+                  />
                 </div>
               )}
-              <div className="card enter enter-2" style={{ padding: 'var(--s5)', marginTop: 'var(--s4)' }}>
-                <div className="between">
-                  <Pill variant="rose">Etap {day.dayNumber} z {pilgrimage.totalDays}</Pill>
-                  <span className="eyebrow">{day.date}</span>
-                </div>
-                {idx === activeIdx ? (
-                  <>
-                    <div className="dial__num" style={{ marginTop: 'var(--s4)' }}>{fmt(pos.doCelu)}<small>km</small></div>
-                    <Eyebrow wine>do celu</Eyebrow>
-                  </>
-                ) : (
-                  <>
-                    <div className="dial__num" style={{ marginTop: 'var(--s4)', color: 'var(--ink-2)' }}>
-                      {fmt(kmCum[kmCum.length - 1] || day.route.totalDistanceKm)}<small style={{ color: 'var(--muted)' }}>km</small>
-                    </div>
-                    <Eyebrow>długość etapu</Eyebrow>
-                  </>
-                )}
-                <div className="dial__route mt3">{dzien.od}<span className="arrow">→</span>{dzien.do}</div>
-                {idx === activeIdx && (
-                  <div className="mt4">
-                    <Progress
-                      pct={pos.pct}
-                      leftLabel={gpsActive ? fmt(pos.km) + ' km przebyto' : 'Planowany postęp: ' + pos.pct + '%'}
-                      rightLabel={gpsActive ? fmt(pos.doCelu) + ' km do celu' : 'Szacowany etap: ' + fmt(pos.doCelu) + ' km do celu'}
-                    />
-                  </div>
-                )}
-              </div>
+            </div>
 
-              <SectionHead>Plan dnia</SectionHead>
-              <div className="card enter enter-3" style={{ padding: 'var(--s5) var(--s5) var(--s4)' }}>
-                <div className="tl">
-                  <div className="tl__line" />
-                  {day.stops.map((stop, i) => (
-                    <TimelineItem
-                      key={stop.id}
-                      stop={stop}
-                      state={stopState(kmCum[i])}
-                      distToNext={stop.distanceToNextKm > 0 ? stop.distanceToNextKm : undefined}
-                      weather={weather[stop.id]}
-                    />
-                  ))}
-                </div>
-              </div>
-              <div className="center mt5">
-                <Button variant="ghost" icon="book" onClick={() => navigate('/konferencja/' + day.dayNumber)}>
-                  Konferencja dnia
-                </Button>
-              </div>
-            </>
-          ) : (
-            <div className="card enter enter-2" style={{ padding: 'var(--s8) var(--s5)', marginTop: 'var(--s4)' }}>
-              <div className="empty">
-                <Icon name="calendar" className="empty__ic" />
-                <div className="empty__t">Harmonogram dnia {day.dayNumber} pojawi się przed etapem</div>
-                <p className="muted mt2" style={{ fontSize: 14 }}>{dzien.od} → {dzien.do} · {fmt(day.route.totalDistanceKm)} km</p>
+            <SectionHead>Plan dnia</SectionHead>
+            <div
+              className="card enter enter-3"
+              style={{ padding: "var(--s5) var(--s5) var(--s4)" }}
+            >
+              <div className="tl">
+                <div className="tl__line" />
+                {day.stops.map((stop, i) => (
+                  <TimelineItem
+                    key={stop.id}
+                    stop={stop}
+                    state={stopState(kmCum[i])}
+                    resting={
+                      idx === activeIdx &&
+                      pos.zrodlo === "plan" &&
+                      isRestingAtStop(day.stops, i)
+                    }
+                    plannedDepartureTime={
+                      idx === activeIdx &&
+                      pos.zrodlo === "plan" &&
+                      plannedRestDuration(stop) > 0
+                        ? plannedDepartureTime(day.stops, i)
+                        : undefined
+                    }
+                    traveling={
+                      idx === activeIdx &&
+                      pos.zrodlo === "plan" &&
+                      isTravelingBetweenStops(day.stops, i)
+                    }
+                    distToNext={
+                      stop.distanceToNextKm > 0
+                        ? stop.distanceToNextKm
+                        : undefined
+                    }
+                    weather={weather[stop.id]}
+                  />
+                ))}
               </div>
             </div>
-          )}
+            <div className="center mt5">
+              <Button
+                variant="ghost"
+                icon="book"
+                onClick={() => navigate("/konferencja/" + day.dayNumber)}
+              >
+                Konferencja dnia
+              </Button>
+            </div>
+          </>
+        ) : (
+          <div
+            className="card enter enter-2"
+            style={{ padding: "var(--s8) var(--s5)", marginTop: "var(--s4)" }}
+          >
+            <div className="empty">
+              <Icon name="calendar" className="empty__ic" />
+              <div className="empty__t">
+                Harmonogram dnia {day.dayNumber} pojawi się przed etapem
+              </div>
+              <p className="muted mt2" style={{ fontSize: 14 }}>
+                {dzien.od} → {dzien.do} · {fmt(day.route.totalDistanceKm)} km
+              </p>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

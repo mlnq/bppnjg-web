@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { konferencjaId, konferencjaNr, scheduledStopTime, toDzien } from './api';
+import { konferencjaId, konferencjaNr, scheduledStopTime, sortKonferencjePoDniu, toDzien } from './api';
 import type { ApiPilgrimageDay, ApiStop } from './types';
 
 const stop = (overrides: Partial<ApiStop> = {}): ApiStop => ({
@@ -32,6 +32,21 @@ describe('konferencjaNr', () => {
 
   it('round-trips with konferencjaId', () => {
     expect(konferencjaNr(konferencjaId(7))).toBe(7);
+  });
+});
+
+describe('sortKonferencjePoDniu', () => {
+  it('sorts by pilgrimage day instead of the API response order', () => {
+    const konferencje = [
+      { id: 'dzien-02', tytul: 'Drugi', autor: 'A' },
+      { id: 'wlasny-tytul', tytul: 'Piąty', autor: 'B', dzien: 5 },
+      { id: 'dzien-01', tytul: 'Pierwszy', autor: 'C' },
+    ];
+
+    expect(sortKonferencjePoDniu(konferencje).map(({ id }) => id)).toEqual([
+      'wlasny-tytul', 'dzien-02', 'dzien-01',
+    ]);
+    expect(konferencje.map(({ id }) => id)).toEqual(['dzien-02', 'wlasny-tytul', 'dzien-01']);
   });
 });
 

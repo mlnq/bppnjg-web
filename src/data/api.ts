@@ -40,6 +40,21 @@ export function konferencjaNr(id: string): number {
   return Number(id.replace(/^dzien-/, ''));
 }
 
+/** Sorts conference archive entries by pilgrimage day, newest day first. */
+export function sortKonferencjePoDniu<T extends KonferencjaListItem>(konferencje: T[]): T[] {
+  return [...konferencje].sort((a, b) => {
+    const aDzien = a.dzien ?? konferencjaNr(a.id);
+    const bDzien = b.dzien ?? konferencjaNr(b.id);
+    const aMaDzien = Number.isFinite(aDzien);
+    const bMaDzien = Number.isFinite(bDzien);
+
+    if (aMaDzien && bMaDzien) return bDzien - aDzien;
+    if (aMaDzien) return -1;
+    if (bMaDzien) return 1;
+    return a.id.localeCompare(b.id, 'pl');
+  });
+}
+
 function fetchJson<T>(path: string, init?: RequestInit): Promise<T> {
   const url = BASE ? `${BASE}${path}` : path;
   return fetch(url, init).then((r) => {
@@ -78,10 +93,12 @@ export const api = {
   getKonferencje(): Promise<KonferencjaListItem[]> {
     if (USE_SEEDS) {
       return Promise.resolve(
-        (konferencjeSeed as Konferencja[]).map(({ id, tytul, autor }) => ({ id, tytul, autor })),
+        sortKonferencjePoDniu(
+          (konferencjeSeed as Konferencja[]).map(({ id, tytul, autor, dzien }) => ({ id, tytul, autor, dzien })),
+        ),
       );
     }
-    return fetchJson<KonferencjaListItem[]>('/api/konferencje');
+    return fetchJson<KonferencjaListItem[]>('/api/konferencje').then(sortKonferencjePoDniu);
   },
 
   async getKonferencja(nr: number): Promise<Konferencja> {

@@ -127,10 +127,11 @@ export type Konferencja = {
   id: string;
   tytul: string;
   autor: string;
+  dzien?: number | null;
   mp3Url: string;
   srtUrl: string;
   akapity?: Akapit[];
   cues?: SrtCue[];
 };
 
-export type KonferencjaListItem = Pick<Konferencja, 'id' | 'tytul' | 'autor'>;
+export type KonferencjaListItem = Pick<Konferencja, 'id' | 'tytul' | 'autor' | 'dzien'>;

@@ -14,7 +14,9 @@ export function KonferencjaRow({ dayNumber }: Props) {
     queryKey: ['konferencje'],
     queryFn: () => api.getKonferencje(),
   });
-  const konferencja = konferencje?.find(({ id }) => id === konferencjaId(dayNumber));
+  const konferencja = konferencje?.find(({ id, dzien }) =>
+    dzien === dayNumber || (dzien == null && id === konferencjaId(dayNumber)),
+  );
 
   return (
     <Row

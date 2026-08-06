@@ -18,6 +18,11 @@ import {
 import { TimelineItem } from "./TimelineItem";
 import { usePlanWeather } from "../../lib/usePlanWeather";
 
+// API uses 0 for stops whose duration has not yet been configured. Keep such
+// a stop current briefly instead of switching its status to "W trasie" at the
+// exact planned arrival minute.
+const DEFAULT_STOP_WINDOW_MIN = 30;
+
 function timeToMinutes(time: string): number | null {
   const match = /^(\d{1,2}):(\d{2})$/.exec(time);
   if (!match) return null;
@@ -26,8 +31,8 @@ function timeToMinutes(time: string): number | null {
   return hours < 24 && minutes < 60 ? hours * 60 + minutes : null;
 }
 
-function plannedRestDuration(stop: ApiPilgrimageDay["stops"][number]): number {
-  return Math.max(stop.durationMin ?? 0, 0);
+function stopWindowDuration(stop: ApiPilgrimageDay["stops"][number]): number {
+  return Math.max(stop.durationMin ?? 0, DEFAULT_STOP_WINDOW_MIN);
 }
 
 function isTravelingBetweenStops(
@@ -43,7 +48,7 @@ function isTravelingBetweenStops(
   const next = timeToMinutes(scheduledStopTime(nextStop));
   if (start === null || next === null) return false;
 
-  const departure = Math.min(start + plannedRestDuration(stop), next);
+  const departure = Math.min(start + stopWindowDuration(stop), next);
   const current = now.getHours() * 60 + now.getMinutes();
   return current >= departure && current < next;
 }
@@ -62,8 +67,30 @@ function isRestingAtStop(
   if (start === null || next === null) return false;
 
   const current = now.getHours() * 60 + now.getMinutes();
-  const duration = plannedRestDuration(stop);
-  return duration > 0 && current >= start && current < Math.min(start + duration, next);
+  const duration = stopWindowDuration(stop);
+  return current >= start && current < Math.min(start + duration, next);
+}
+
+function scheduleStopState(
+  stops: ApiPilgrimageDay["stops"],
+  index: number,
+  now = new Date(),
+): "done" | "now" | "next" {
+  const stop = stops[index];
+  if (!stop) return "next";
+
+  const start = timeToMinutes(scheduledStopTime(stop));
+  const nextStop = stops[index + 1];
+  const next = nextStop ? timeToMinutes(scheduledStopTime(nextStop)) : null;
+  if (start === null) return "next";
+
+  const current = now.getHours() * 60 + now.getMinutes();
+  // The final waypoint remains the current destination after its arrival.
+  if (next === null) return current >= start ? "now" : "next";
+
+  const departure = Math.min(start + stopWindowDuration(stop), next);
+  if (current >= departure) return "done";
+  return current >= start ? "now" : "next";
 }
 
 function plannedDepartureTime(
@@ -78,7 +105,7 @@ function plannedDepartureTime(
   const next = timeToMinutes(scheduledStopTime(nextStop));
   if (start === null || next === null) return undefined;
 
-  const end = Math.min(start + plannedRestDuration(stop), next);
+  const end = Math.min(start + stopWindowDuration(stop), next);
   return `${String(Math.floor(end / 60) % 24).padStart(2, "0")}:${String(end % 60).padStart(2, "0")}`;
 }
 
@@ -237,36 +264,46 @@ function TrasaLoaded({
             >
               <div className="tl">
                 <div className="tl__line" />
-                {day.stops.map((stop, i) => (
-                  <TimelineItem
-                    key={stop.id}
-                    stop={stop}
-                    state={stopState(kmCum[i])}
-                    resting={
-                      idx === activeIdx &&
-                      pos.zrodlo === "plan" &&
-                      isRestingAtStop(day.stops, i)
-                    }
-                    plannedDepartureTime={
-                      idx === activeIdx &&
-                      pos.zrodlo === "plan" &&
-                      plannedRestDuration(stop) > 0
-                        ? plannedDepartureTime(day.stops, i)
-                        : undefined
-                    }
-                    traveling={
-                      idx === activeIdx &&
-                      pos.zrodlo === "plan" &&
-                      isTravelingBetweenStops(day.stops, i)
-                    }
-                    distToNext={
-                      stop.distanceToNextKm > 0
-                        ? stop.distanceToNextKm
-                        : undefined
-                    }
-                    weather={weather[stop.id]}
-                  />
-                ))}
+                {day.stops.map((stop, i) => {
+                  // A planned break is a more precise signal than a distance
+                  // estimate (especially when the GPS fix is slightly off).
+                  // Keep its stop visibly selected even when GPS is available.
+                  const resting =
+                    idx === activeIdx && isRestingAtStop(day.stops, i);
+
+                  return (
+                    <TimelineItem
+                      key={stop.id}
+                      stop={stop}
+                      state={
+                        resting
+                          ? "now"
+                          : pos.zrodlo === "plan"
+                            ? scheduleStopState(day.stops, i)
+                            : stopState(kmCum[i])
+                      }
+                      resting={resting}
+                      plannedDepartureTime={
+                        idx === activeIdx &&
+                        pos.zrodlo === "plan" &&
+                        stopWindowDuration(stop) > 0
+                          ? plannedDepartureTime(day.stops, i)
+                          : undefined
+                      }
+                      traveling={
+                        idx === activeIdx &&
+                        pos.zrodlo === "plan" &&
+                        isTravelingBetweenStops(day.stops, i)
+                      }
+                      distToNext={
+                        stop.distanceToNextKm > 0
+                          ? stop.distanceToNextKm
+                          : undefined
+                      }
+                      weather={weather[stop.id]}
+                    />
+                  );
+                })}
               </div>
             </div>
             <div className="center mt5">

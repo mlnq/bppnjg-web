@@ -35,7 +35,6 @@ export function TimelineItem({
   stop,
   state: s,
   resting = false,
-  plannedDepartureTime,
   traveling = false,
   distToNext,
   weather,
@@ -57,6 +56,9 @@ export function TimelineItem({
           <div className="tl__time">
             <Icon name={icon} />
             {scheduledStopTime(stop)}
+            {resting && (
+              <span className="badge badge--now tl__badge">Aktualnie</span>
+            )}
           </div>
           <div className="tl__meta">
             {(stop.durationMin || resting) && (
@@ -67,9 +69,6 @@ export function TimelineItem({
                     {stop.durationMin} min
                   </span>
                 ) : null}
-                {resting && (
-                  <span className="badge badge--now tl__badge">Aktualnie</span>
-                )}
               </div>
             )}
           </div>
